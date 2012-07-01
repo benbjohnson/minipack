@@ -13,31 +13,57 @@
 // Positive Fixnum
 //--------------------------------------
 
-int test_pfixnum_read() {
+int test_pos_fixnum_read() {
     uint8_t data[] = {0x00, 0x02, 0x14, 0x7F, 0x80};
-    mu_assert(minipack_pfixnum_read(data+0) == 0);
-    mu_assert(minipack_pfixnum_read(data+1) == 2);
-    mu_assert(minipack_pfixnum_read(data+2) == 20);
-    mu_assert(minipack_pfixnum_read(data+3) == 127);
-    mu_assert(minipack_pfixnum_read(data+4) == 0);
+    mu_assert(minipack_pos_fixnum_read(data+0) == 0);
+    mu_assert(minipack_pos_fixnum_read(data+1) == 2);
+    mu_assert(minipack_pos_fixnum_read(data+2) == 20);
+    mu_assert(minipack_pos_fixnum_read(data+3) == 127);
+    mu_assert(minipack_pos_fixnum_read(data+4) == 0);
     return 0;
 }
 
-int test_pfixnum_write() {
+int test_pos_fixnum_write() {
     uint8_t data[] = {0x00, 0x00, 0x00, 0x00, 0x00};
-    minipack_pfixnum_write(data+0, 0);
-    minipack_pfixnum_write(data+1, 2);
-    minipack_pfixnum_write(data+2, 20);
-    minipack_pfixnum_write(data+3, 127);
-    minipack_pfixnum_write(data+4, 128);
-    mu_assert(data[0] == 0);
-    mu_assert(data[1] == 2);
-    mu_assert(data[2] == 20);
-    mu_assert(data[3] == 127);
-    mu_assert(data[4] == 0);
+    minipack_pos_fixnum_write(data+0, 0);
+    minipack_pos_fixnum_write(data+1, 2);
+    minipack_pos_fixnum_write(data+2, 20);
+    minipack_pos_fixnum_write(data+3, 127);
+    minipack_pos_fixnum_write(data+4, 128);
+    mu_assert(data[0] == 0x00);
+    mu_assert(data[1] == 0x02);
+    mu_assert(data[2] == 0x14);
+    mu_assert(data[3] == 0x7F);
+    mu_assert(data[4] == 0x00);
     return 0;
 }
 
+
+//--------------------------------------
+// Negative Fixnum
+//--------------------------------------
+
+int test_neg_fixnum_read() {
+    uint8_t data[] = {0xE0, 0xE2, 0xF3, 0xFF};
+    mu_assert(minipack_neg_fixnum_read(data+0) == -1);
+    mu_assert(minipack_neg_fixnum_read(data+1) == -3);
+    mu_assert(minipack_neg_fixnum_read(data+2) == -20);
+    mu_assert(minipack_neg_fixnum_read(data+3) == -32);
+    return 0;
+}
+
+int test_neg_fixnum_write() {
+    uint8_t data[] = {0x00, 0x00, 0x00, 0x00};
+    minipack_neg_fixnum_write(data+0, -1);
+    minipack_neg_fixnum_write(data+1, -3);
+    minipack_neg_fixnum_write(data+2, -20);
+    minipack_neg_fixnum_write(data+3, -32);
+    mu_assert(data[0] == 0xE0);
+    mu_assert(data[1] == 0xE2);
+    mu_assert(data[2] == 0xF3);
+    mu_assert(data[3] == 0xFF);
+    return 0;
+}
 
 //==============================================================================
 //
@@ -46,8 +72,12 @@ int test_pfixnum_write() {
 //==============================================================================
 
 int all_tests() {
-    mu_run_test(test_pfixnum_read);
-    mu_run_test(test_pfixnum_write);
+    mu_run_test(test_pos_fixnum_read);
+    mu_run_test(test_pos_fixnum_write);
+
+    mu_run_test(test_neg_fixnum_read);
+    mu_run_test(test_neg_fixnum_write);
+
     return 0;
 }
 

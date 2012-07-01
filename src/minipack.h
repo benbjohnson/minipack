@@ -12,12 +12,21 @@
 //==============================================================================
 
 //======================================
-// Fixnum
+// Positive Fixnum
 //======================================
 
-uint8_t minipack_pfixnum_read(void *ptr);
+uint8_t minipack_pos_fixnum_read(void *ptr);
 
-void minipack_pfixnum_write(void *ptr, uint8_t value);
+void minipack_pos_fixnum_write(void *ptr, uint8_t value);
+
+
+//======================================
+// Negative Fixnum
+//======================================
+
+int8_t minipack_neg_fixnum_read(void *ptr);
+
+void minipack_neg_fixnum_write(void *ptr, int8_t value);
 
 
 #endif
