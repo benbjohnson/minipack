@@ -102,8 +102,21 @@ void minipack_uint64_write(void *ptr, uint64_t value);
 //==============================================================================
 
 //======================================
+// Signed Int
+//======================================
+
+size_t minipack_int_sizeof(int64_t value);
+
+int64_t minipack_int_read(void *ptr, size_t *sz);
+
+void minipack_int_write(void *ptr, int64_t value, size_t *sz);
+
+
+//======================================
 // Signed Int (8-bit)
 //======================================
+
+bool minipack_is_int8(void *ptr);
 
 int8_t minipack_int8_read(void *ptr);
 
@@ -114,6 +127,8 @@ void minipack_int8_write(void *ptr, int8_t value);
 // Signed Int (16-bit)
 //======================================
 
+bool minipack_is_int16(void *ptr);
+
 int16_t minipack_int16_read(void *ptr);
 
 void minipack_int16_write(void *ptr, int16_t value);
@@ -123,6 +138,8 @@ void minipack_int16_write(void *ptr, int16_t value);
 // Signed Int (32-bit)
 //======================================
 
+bool minipack_is_int32(void *ptr);
+
 int32_t minipack_int32_read(void *ptr);
 
 void minipack_int32_write(void *ptr, int32_t value);
@@ -131,6 +148,8 @@ void minipack_int32_write(void *ptr, int32_t value);
 //======================================
 // Signed Int (64-bit)
 //======================================
+
+bool minipack_is_int64(void *ptr);
 
 int64_t minipack_int64_read(void *ptr);
 

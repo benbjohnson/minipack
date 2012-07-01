@@ -12,12 +12,15 @@
 // Fixnum
 //--------------------------------------
 
+#define POS_FIXNUM_MIN          0
 #define POS_FIXNUM_MAX          127
 #define POS_FIXNUM_TYPE         0x00
 #define POS_FIXNUM_TYPE_MASK    0x80
 #define POS_FIXNUM_VALUE_MASK   0x7F
 #define POS_FIXNUM_SIZE         1
 
+#define NEG_FIXNUM_MIN          -32
+#define NEG_FIXNUM_MAX          -1
 #define NEG_FIXNUM_TYPE         0xE0
 #define NEG_FIXNUM_TYPE_MASK    0xE0
 #define NEG_FIXNUM_VALUE_MASK   0x1F
@@ -221,6 +224,16 @@ void minipack_pos_fixnum_write(void *ptr, uint8_t value)
 // Negative Fixnum
 //--------------------------------------
 
+// Checks if an element is a negative fixnum.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is a negative fixnum, otherwise returns false.
+bool minipack_is_neg_fixnum(void *ptr)
+{
+    return (*((uint8_t*)ptr) & NEG_FIXNUM_TYPE_MASK) == NEG_FIXNUM_TYPE;
+}
+
 // Reads a negative fixnum from a given memory address.
 //
 // ptr - A pointer to where the fixnum should be read from.
@@ -283,7 +296,7 @@ size_t minipack_uint_sizeof(uint64_t value)
 // ptr - A pointer to where the unsigned int should be read from.
 // sz  - A pointer to where the size of the element should be stored.
 //
-// Returns the number of bytes in the element.
+// Returns the value of the element.
 uint64_t minipack_uint_read(void *ptr, size_t *sz)
 {
     if(minipack_is_pos_fixnum(ptr)) {
@@ -485,8 +498,119 @@ void minipack_uint64_write(void *ptr, uint64_t value)
 //==============================================================================
 
 //--------------------------------------
+// Signed Int
+//--------------------------------------
+
+// Retrieves the size, in bytes, of how large an element will be.
+//
+// value - The value to calculate the size of.
+//
+// Returns the number of bytes needed for the element.
+size_t minipack_int_sizeof(int64_t value)
+{
+    if(value >= POS_FIXNUM_MIN && value <= POS_FIXNUM_MAX) {
+        return POS_FIXNUM_SIZE;
+    }
+    else if(value >= NEG_FIXNUM_MIN && value <= NEG_FIXNUM_MAX) {
+        return NEG_FIXNUM_SIZE;
+    }
+    else if(value >= INT8_MIN && value <= INT8_MAX) {
+        return INT8_SIZE;
+    }
+    else if(value >= INT16_MIN && value <= INT16_MAX) {
+        return INT16_SIZE;
+    }
+    else if(value >= INT32_MIN && value <= INT32_MAX) {
+        return INT32_SIZE;
+    }
+    else if(value >= INT64_MIN && value <= INT64_MAX) {
+        return INT64_SIZE;
+    }
+
+    return 0;
+}
+
+// Reads a signed integer from a given memory address.
+//
+// ptr - A pointer to where the signed int should be read from.
+// sz  - A pointer to where the size of the element should be stored.
+//
+// Returns the value of the element
+int64_t minipack_int_read(void *ptr, size_t *sz)
+{
+    if(minipack_is_pos_fixnum(ptr)) {
+        *sz = POS_FIXNUM_SIZE;
+        return (int64_t)minipack_pos_fixnum_read(ptr);
+    }
+    if(minipack_is_neg_fixnum(ptr)) {
+        *sz = NEG_FIXNUM_SIZE;
+        return (int64_t)minipack_neg_fixnum_read(ptr);
+    }
+    else if(minipack_is_int8(ptr)) {
+        *sz = INT8_SIZE;
+        return (int64_t)minipack_int8_read(ptr);
+    }
+    else if(minipack_is_int16(ptr)) {
+        *sz = INT16_SIZE;
+        return (int64_t)minipack_int16_read(ptr);
+    }
+    else if(minipack_is_int32(ptr)) {
+        *sz = INT32_SIZE;
+        return (int64_t)minipack_int32_read(ptr);
+    }
+    else if(minipack_is_int64(ptr)) {
+        *sz = INT64_SIZE;
+        return minipack_int64_read(ptr);
+    }
+    else {
+        *sz = 0;
+        return 0;
+    }
+}
+
+// Writes a signed integer to a given memory address.
+//
+// ptr   - A pointer to where the integer should be written to.
+// value - The value to write.
+// sz    - A pointer to where the size of the element will be returned.
+void minipack_int_write(void *ptr, int64_t value, size_t *sz)
+{
+    *sz = minipack_int_sizeof(value);
+
+    if(value >= POS_FIXNUM_MIN && value <= POS_FIXNUM_MAX) {
+        minipack_pos_fixnum_write(ptr, (int8_t)value);
+    }
+    else if(value >= NEG_FIXNUM_MIN && value <= NEG_FIXNUM_MAX) {
+        minipack_pos_fixnum_write(ptr, (int8_t)value);
+    }
+    else if(value >= INT8_MIN && value <= INT8_MAX) {
+        minipack_int8_write(ptr, (int8_t)value);
+    }
+    else if(value >= INT16_MIN && value <= INT16_MAX) {
+        minipack_int16_write(ptr, (int16_t)value);
+    }
+    else if(value >= INT32_MIN && value <= INT32_MAX) {
+        minipack_int32_write(ptr, (int32_t)value);
+    }
+    else if(value >= INT64_MIN && value <= INT64_MAX) {
+        minipack_int64_write(ptr, value);
+    }
+}
+
+
+//--------------------------------------
 // Signed Int (8-bit)
 //--------------------------------------
+
+// Checks if an element is a signed 8-bit integer.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is an 8-bit integer, otherwise returns false.
+bool minipack_is_int8(void *ptr)
+{
+    return (*((uint8_t*)ptr) == INT8_TYPE);
+}
 
 // Reads an signed 8-bit integer from a given memory address.
 //
@@ -512,6 +636,16 @@ void minipack_int8_write(void *ptr, int8_t value)
 // Signed Int (16-bit)
 //--------------------------------------
 
+// Checks if an element is a signed 16-bit integer.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is an 16-bit integer, otherwise returns false.
+bool minipack_is_int16(void *ptr)
+{
+    return (*((uint8_t*)ptr) == INT16_TYPE);
+}
+
 // Reads an signed 16-bit integer from a given memory address.
 //
 // ptr - A pointer to where the signed int should be read from.
@@ -536,6 +670,16 @@ void minipack_int16_write(void *ptr, int16_t value)
 // Signed Int (32-bit)
 //--------------------------------------
 
+// Checks if an element is a signed 32-bit integer.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is an 32-bit integer, otherwise returns false.
+bool minipack_is_int32(void *ptr)
+{
+    return (*((uint8_t*)ptr) == INT32_TYPE);
+}
+
 // Reads an signed 32-bit integer from a given memory address.
 //
 // ptr - A pointer to where the signed int should be read from.
@@ -559,6 +703,16 @@ void minipack_int32_write(void *ptr, int32_t value)
 //--------------------------------------
 // Signed Int (64-bit)
 //--------------------------------------
+
+// Checks if an element is a signed 64-bit integer.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is an 64-bit integer, otherwise returns false.
+bool minipack_is_int64(void *ptr)
+{
+    return (*((uint8_t*)ptr) == INT64_TYPE);
+}
 
 // Reads an signed 64-bit integer from a given memory address.
 //
