@@ -12,6 +12,7 @@
 // Fixnum
 //--------------------------------------
 
+#define POS_FIXNUM_MAX          127
 #define POS_FIXNUM_TYPE         0x00
 #define POS_FIXNUM_TYPE_MASK    0x80
 #define POS_FIXNUM_VALUE_MASK   0x7F
@@ -186,6 +187,16 @@ uint64_t bswap64(uint64_t value)
 // Positive Fixnum
 //--------------------------------------
 
+// Checks if an element is a positive fixnum.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is a positive fixnum, otherwise returns false.
+bool minipack_is_pos_fixnum(void *ptr)
+{
+    return (*((uint8_t*)ptr) & POS_FIXNUM_TYPE_MASK) == POS_FIXNUM_TYPE;
+}
+
 // Reads a positive fixnum from a given memory address.
 //
 // ptr - A pointer to where the fixnum should be read from.
@@ -238,8 +249,109 @@ void minipack_neg_fixnum_write(void *ptr, int8_t value)
 //==============================================================================
 
 //--------------------------------------
+// Unsigned Int
+//--------------------------------------
+
+// Retrieves the size, in bytes, of how large an element will be.
+//
+// value - The value to calculate the size of.
+//
+// Returns the number of bytes needed for the element.
+size_t minipack_uint_sizeof(uint64_t value)
+{
+    if(value <= POS_FIXNUM_MAX) {
+        return POS_FIXNUM_SIZE;
+    }
+    else if(value <= UINT8_MAX) {
+        return UINT8_SIZE;
+    }
+    else if(value <= UINT16_MAX) {
+        return UINT16_SIZE;
+    }
+    else if(value <= UINT32_MAX) {
+        return UINT32_SIZE;
+    }
+    else if(value <= UINT64_MAX) {
+        return UINT64_SIZE;
+    }
+
+    return 0;
+}
+
+// Reads an unsigned integer from a given memory address.
+//
+// ptr - A pointer to where the unsigned int should be read from.
+// sz  - A pointer to where the size of the element should be stored.
+//
+// Returns the number of bytes in the element.
+uint64_t minipack_uint_read(void *ptr, size_t *sz)
+{
+    if(minipack_is_pos_fixnum(ptr)) {
+        *sz = POS_FIXNUM_SIZE;
+        return (uint64_t)minipack_pos_fixnum_read(ptr);
+    }
+    else if(minipack_is_uint8(ptr)) {
+        *sz = UINT8_SIZE;
+        return (uint64_t)minipack_uint8_read(ptr);
+    }
+    else if(minipack_is_uint16(ptr)) {
+        *sz = UINT16_SIZE;
+        return (uint64_t)minipack_uint16_read(ptr);
+    }
+    else if(minipack_is_uint32(ptr)) {
+        *sz = UINT32_SIZE;
+        return (uint64_t)minipack_uint32_read(ptr);
+    }
+    else if(minipack_is_uint64(ptr)) {
+        *sz = UINT64_SIZE;
+        return minipack_uint64_read(ptr);
+    }
+    else {
+        *sz = 0;
+        return 0;
+    }
+}
+
+// Writes an unsigned integer to a given memory address.
+//
+// ptr   - A pointer to where the integer should be written to.
+// value - The value to write.
+// sz    - A pointer to where the size of the element will be returned.
+void minipack_uint_write(void *ptr, uint64_t value, size_t *sz)
+{
+    *sz = minipack_uint_sizeof(value);
+
+    if(value <= POS_FIXNUM_MAX) {
+        minipack_pos_fixnum_write(ptr, (uint8_t)value);
+    }
+    else if(value <= UINT8_MAX) {
+        minipack_uint8_write(ptr, (uint8_t)value);
+    }
+    else if(value <= UINT16_MAX) {
+        minipack_uint16_write(ptr, (uint16_t)value);
+    }
+    else if(value <= UINT32_MAX) {
+        minipack_uint32_write(ptr, (uint32_t)value);
+    }
+    else if(value <= UINT64_MAX) {
+        minipack_uint64_write(ptr, value);
+    }
+}
+
+
+//--------------------------------------
 // Unsigned Int (8-bit)
 //--------------------------------------
+
+// Checks if an element is an unsigned 8-bit integer.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is an 8-bit integer, otherwise returns false.
+bool minipack_is_uint8(void *ptr)
+{
+    return (*((uint8_t*)ptr) == UINT8_TYPE);
+}
 
 // Reads an unsigned 8-bit integer from a given memory address.
 //
@@ -264,6 +376,16 @@ void minipack_uint8_write(void *ptr, uint8_t value)
 //--------------------------------------
 // Unsigned Int (16-bit)
 //--------------------------------------
+
+// Checks if an element is an unsigned 16-bit integer.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is an 16-bit integer, otherwise returns false.
+bool minipack_is_uint16(void *ptr)
+{
+    return (*((uint8_t*)ptr) == UINT16_TYPE);
+}
 
 // Reads an unsigned 16-bit integer from a given memory address.
 //
@@ -290,6 +412,16 @@ void minipack_uint16_write(void *ptr, uint16_t value)
 // Unsigned Int (32-bit)
 //--------------------------------------
 
+// Checks if an element is an unsigned 32-bit integer.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is an 32-bit integer, otherwise returns false.
+bool minipack_is_uint32(void *ptr)
+{
+    return (*((uint8_t*)ptr) == UINT32_TYPE);
+}
+
 // Reads an unsigned 32-bit integer from a given memory address.
 //
 // ptr - A pointer to where the unsigned int should be read from.
@@ -314,6 +446,16 @@ void minipack_uint32_write(void *ptr, uint32_t value)
 //--------------------------------------
 // Unsigned Int (64-bit)
 //--------------------------------------
+
+// Checks if an element is an unsigned 64-bit integer.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is an 64-bit integer, otherwise returns false.
+bool minipack_is_uint64(void *ptr)
+{
+    return (*((uint8_t*)ptr) == UINT64_TYPE);
+}
 
 // Reads an unsigned 64-bit integer from a given memory address.
 //
@@ -802,4 +944,6 @@ void minipack_map32_write_header(void *ptr, uint32_t count)
     *((uint8_t*)ptr)      = MAP32_TYPE;
     *((uint32_t*)(ptr+1)) = htonl(count);
 }
+
+
 

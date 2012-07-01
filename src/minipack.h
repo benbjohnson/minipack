@@ -3,6 +3,7 @@
 
 #include <inttypes.h>
 #include <stdbool.h>
+#include <stddef.h>
 
 
 //==============================================================================
@@ -14,6 +15,8 @@
 //======================================
 // Positive Fixnum
 //======================================
+
+bool minipack_is_pos_fixnum(void *ptr);
 
 uint8_t minipack_pos_fixnum_read(void *ptr);
 
@@ -37,8 +40,21 @@ void minipack_neg_fixnum_write(void *ptr, int8_t value);
 //==============================================================================
 
 //======================================
+// Unsigned Int
+//======================================
+
+size_t minipack_uint_sizeof(uint64_t value);
+
+uint64_t minipack_uint_read(void *ptr, size_t *sz);
+
+void minipack_uint_write(void *ptr, uint64_t value, size_t *sz);
+
+
+//======================================
 // Unsigned Int (8-bit)
 //======================================
+
+bool minipack_is_uint8(void *ptr);
 
 uint8_t minipack_uint8_read(void *ptr);
 
@@ -49,6 +65,8 @@ void minipack_uint8_write(void *ptr, uint8_t value);
 // Unsigned Int (16-bit)
 //======================================
 
+bool minipack_is_uint16(void *ptr);
+
 uint16_t minipack_uint16_read(void *ptr);
 
 void minipack_uint16_write(void *ptr, uint16_t value);
@@ -58,6 +76,8 @@ void minipack_uint16_write(void *ptr, uint16_t value);
 // Unsigned Int (32-bit)
 //======================================
 
+bool minipack_is_uint32(void *ptr);
+
 uint32_t minipack_uint32_read(void *ptr);
 
 void minipack_uint32_write(void *ptr, uint32_t value);
@@ -66,6 +86,8 @@ void minipack_uint32_write(void *ptr, uint32_t value);
 //======================================
 // Unsigned Int (64-bit)
 //======================================
+
+bool minipack_is_uint64(void *ptr);
 
 uint64_t minipack_uint64_read(void *ptr);
 
