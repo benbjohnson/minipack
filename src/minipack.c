@@ -682,3 +682,28 @@ void minipack_array16_write_header(void *ptr, uint16_t count)
     *((uint16_t*)(ptr+1)) = htons(count);
 }
 
+
+//--------------------------------------
+// Array 32
+//--------------------------------------
+
+// Reads the number of elements in an array 32 from a given memory address.
+//
+// ptr - A pointer to where the array 32 should be read from.
+//
+// Returns the number of elements in the array
+uint32_t minipack_array32_read_count(void *ptr)
+{
+    return ntohl(*((uint32_t*)(ptr+1)));
+}
+
+// Writes an array 32 header to a given memory address.
+//
+// ptr - A pointer to where the header should be written to.
+void minipack_array32_write_header(void *ptr, uint32_t count)
+{
+    // Write header.
+    *((uint8_t*)ptr)      = ARRAY32_TYPE;
+    *((uint32_t*)(ptr+1)) = htonl(count);
+}
+

@@ -226,4 +226,13 @@ uint16_t minipack_array16_read_count(void *ptr);
 void minipack_array16_write_header(void *ptr, uint16_t count);
 
 
+//======================================
+// Array 32
+//======================================
+
+uint32_t minipack_array32_read_count(void *ptr);
+
+void minipack_array32_write_header(void *ptr, uint32_t count);
+
+
 #endif
