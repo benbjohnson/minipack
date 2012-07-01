@@ -167,4 +167,20 @@ double minipack_double_read(void *ptr);
 void minipack_double_write(void *ptr, double value);
 
 
+
+//==============================================================================
+//
+// Raw Bytes
+//
+//==============================================================================
+
+//======================================
+// Fix raw
+//======================================
+
+uint8_t minipack_fixraw_read_length(void *ptr);
+
+void minipack_fixraw_write(void *ptr, uint8_t length, void *bytes);
+
+
 #endif

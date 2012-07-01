@@ -1,5 +1,5 @@
 #include "minipack.h"
-#include "../tests/memdump.h"
+#include "string.h"
 
 //==============================================================================
 //
@@ -58,6 +58,12 @@
 
 #define DOUBLE_TYPE             0xCB
 #define DOUBLE_SIZE             9
+
+
+#define FIXRAW_TYPE         0xA0
+#define FIXRAW_TYPE_MASK    0xE0
+#define FIXRAW_VALUE_MASK   0x1F
+#define FIXRAW_SIZE         1
 
 
 //==============================================================================
@@ -120,7 +126,7 @@ uint64_t bswap64(uint64_t value)
 // Returns an unsigned 8-bit integer value for the fixnum.
 uint8_t minipack_pos_fixnum_read(void *ptr)
 {
-    int8_t value = *((uint8_t*)ptr);
+    uint8_t value = *((uint8_t*)ptr);
     return value & POS_FIXNUM_VALUE_MASK;
 }
 
@@ -477,5 +483,39 @@ void minipack_double_write(void *ptr, double value)
     uint64_t bytes = htonll(*((uint64_t*)&value));
     *((uint8_t*)ptr)    = DOUBLE_TYPE;
     *((double*)(ptr+1)) = *((double*)&bytes);
+}
+
+
+
+//==============================================================================
+//
+// Raw Bytes
+//
+//==============================================================================
+
+//--------------------------------------
+// Fix raw
+//--------------------------------------
+
+// Reads the number of bytes in a fix raw from a given memory address.
+//
+// ptr - A pointer to where the fix raw should be read from.
+//
+// Returns the length of the bytes.
+uint8_t minipack_fixraw_read_length(void *ptr)
+{
+    return *((uint8_t*)ptr) & FIXRAW_VALUE_MASK;
+}
+
+// Writes a fix raw byte array to a given memory address.
+//
+// ptr - A pointer to where the bytes should be written to.
+void minipack_fixraw_write(void *ptr, uint8_t length, void *bytes)
+{
+    // Write length.
+    *((uint8_t*)ptr) = (length & FIXRAW_VALUE_MASK) | FIXRAW_TYPE;
+    
+    // Write raw bytes.
+    memmove(ptr+1, bytes, length);
 }
 
