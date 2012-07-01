@@ -19,7 +19,7 @@ int test_uint32_read() {
 }
 
 int test_uint32_write() {
-    uint8_t data[] = {0x00, 0x00, 0x00};
+    uint8_t data[] = {0x00, 0x00, 0x00, 0x00, 0x00};
 
     minipack_uint32_write(data, 0);
     mu_assert_mem(data, 5, "\xCE\x00\x00\x00\x00");

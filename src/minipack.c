@@ -199,3 +199,28 @@ void minipack_uint32_write(void *ptr, uint32_t value)
     *((uint8_t*)ptr)      = UINT32_TYPE;
     *((uint32_t*)(ptr+1)) = htonl(value);
 }
+
+
+//--------------------------------------
+// Unsigned Int (64-bit)
+//--------------------------------------
+
+// Reads an unsigned 64-bit integer from a given memory address.
+//
+// ptr - A pointer to where the unsigned int should be read from.
+//
+// Returns an unsigned 64-bit integer value.
+uint64_t minipack_uint64_read(void *ptr)
+{
+    uint64_t value = *((uint64_t*)(ptr+1));
+    return ntohll(value);
+}
+
+// Writes an unsigned 64-bit integer to a given memory address.
+//
+// ptr - A pointer to where the integer should be written to.
+void minipack_uint64_write(void *ptr, uint64_t value)
+{
+    *((uint8_t*)ptr)      = UINT64_TYPE;
+    *((uint64_t*)(ptr+1)) = htonll(value);
+}

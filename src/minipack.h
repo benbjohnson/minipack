@@ -56,4 +56,13 @@ uint32_t minipack_uint32_read(void *ptr);
 void minipack_uint32_write(void *ptr, uint32_t value);
 
 
+//======================================
+// Unsigned Int (64-bit)
+//======================================
+
+uint64_t minipack_uint64_read(void *ptr);
+
+void minipack_uint64_write(void *ptr, uint64_t value);
+
+
 #endif
