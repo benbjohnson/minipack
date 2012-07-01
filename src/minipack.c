@@ -450,3 +450,32 @@ void minipack_float_write(void *ptr, float value)
     *((uint8_t*)ptr)   = FLOAT_TYPE;
     *((float*)(ptr+1)) = *((float*)&bytes);
 }
+
+
+//--------------------------------------
+// Double
+//--------------------------------------
+
+// Reads a double from a given memory address.
+//
+// ptr - A pointer to where the double should be read from.
+//
+// Returns a double value.
+double minipack_double_read(void *ptr)
+{
+    // Cast bytes to int64 to use ntohll.
+    uint64_t value = *((uint64_t*)(ptr+1));
+    value = ntohll(value);
+    return *((double*)&value);
+}
+
+// Writes a double to a given memory address.
+//
+// ptr - A pointer to where the double should be written to.
+void minipack_double_write(void *ptr, double value)
+{
+    uint64_t bytes = htonll(*((uint64_t*)&value));
+    *((uint8_t*)ptr)    = DOUBLE_TYPE;
+    *((double*)(ptr+1)) = *((double*)&bytes);
+}
+

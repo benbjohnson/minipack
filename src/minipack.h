@@ -158,4 +158,13 @@ float minipack_float_read(void *ptr);
 void minipack_float_write(void *ptr, float value);
 
 
+//======================================
+// Double
+//======================================
+
+double minipack_double_read(void *ptr);
+
+void minipack_double_write(void *ptr, double value);
+
+
 #endif
