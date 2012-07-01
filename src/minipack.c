@@ -174,3 +174,28 @@ void minipack_uint16_write(void *ptr, uint16_t value)
     *((uint8_t*)ptr)      = UINT16_TYPE;
     *((uint16_t*)(ptr+1)) = htons(value);
 }
+
+
+//--------------------------------------
+// Unsigned Int (32-bit)
+//--------------------------------------
+
+// Reads an unsigned 32-bit integer from a given memory address.
+//
+// ptr - A pointer to where the unsigned int should be read from.
+//
+// Returns an unsigned 32-bit integer value.
+uint32_t minipack_uint32_read(void *ptr)
+{
+    uint32_t value = *((uint32_t*)(ptr+1));
+    return ntohl(value);
+}
+
+// Writes an unsigned 32-bit integer to a given memory address.
+//
+// ptr - A pointer to where the integer should be written to.
+void minipack_uint32_write(void *ptr, uint32_t value)
+{
+    *((uint8_t*)ptr)      = UINT32_TYPE;
+    *((uint32_t*)(ptr+1)) = htonl(value);
+}
