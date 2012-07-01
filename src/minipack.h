@@ -38,4 +38,13 @@ uint8_t minipack_uint8_read(void *ptr);
 void minipack_uint8_write(void *ptr, uint8_t value);
 
 
+//======================================
+// Unsigned Int (16-bit)
+//======================================
+
+uint16_t minipack_uint16_read(void *ptr);
+
+void minipack_uint16_write(void *ptr, uint16_t value);
+
+
 #endif

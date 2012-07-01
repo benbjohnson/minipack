@@ -1,4 +1,5 @@
 #include "minipack.h"
+#include "../tests/memdump.h"
 
 //==============================================================================
 //
@@ -27,6 +28,49 @@
 
 #define UINT64_TYPE             0xCF
 #define UINT64_SIZE             9
+
+
+//==============================================================================
+//
+// Byte Order
+//
+//==============================================================================
+
+#include <sys/types.h>
+
+#ifndef BYTE_ORDER
+#if defined(linux) || defined(__linux__)
+# include <endian.h>
+#else
+# include <machine/endian.h>
+#endif
+#endif
+
+#if !defined(BYTE_ORDER)
+#error "Undefined byte order"
+#endif
+
+uint64_t bswap64(uint64_t value)
+{
+    return (
+        ((value & 0x00000000000000FF) << 56) |
+        ((value & 0x000000000000FF00) << 40) |
+        ((value & 0x0000000000FF0000) << 24) |
+        ((value & 0x00000000FF000000) << 8) |
+        ((value & 0x000000FF00000000) >> 8) |
+        ((value & 0x0000FF0000000000) >> 24) |
+        ((value & 0x00FF000000000000) >> 40) |
+        ((value & 0xFF00000000000000) >> 56)
+    );
+}
+
+#if (BYTE_ORDER == LITTLE_ENDIAN)
+#define htonll(x) bswap64(x)
+#define ntohll(x) bswap64(x)
+#else
+#define htonll(x) x
+#define ntohll(x) x
+#endif
 
 
 //==============================================================================
@@ -97,11 +141,36 @@ uint8_t minipack_uint8_read(void *ptr)
     return *((uint8_t*)(ptr+1));
 }
 
-// Writes a positive fixnum to a given memory address.
+// Writes an unsigned 8-bit integer to a given memory address.
 //
-// ptr - A pointer to where the fixnum should be written to.
+// ptr - A pointer to where the integer should be written to.
 void minipack_uint8_write(void *ptr, uint8_t value)
 {
     *((uint8_t*)ptr)     = UINT8_TYPE;
     *((uint8_t*)(ptr+1)) = value;
+}
+
+
+//--------------------------------------
+// Unsigned Int (16-bit)
+//--------------------------------------
+
+// Reads an unsigned 16-bit integer from a given memory address.
+//
+// ptr - A pointer to where the unsigned int should be read from.
+//
+// Returns an unsigned 16-bit integer value.
+uint16_t minipack_uint16_read(void *ptr)
+{
+    uint16_t value = *((uint16_t*)(ptr+1));
+    return ntohs(value);
+}
+
+// Writes an unsigned 16-bit integer to a given memory address.
+//
+// ptr - A pointer to where the integer should be written to.
+void minipack_uint16_write(void *ptr, uint16_t value)
+{
+    *((uint8_t*)ptr)      = UINT16_TYPE;
+    *((uint16_t*)(ptr+1)) = htons(value);
 }

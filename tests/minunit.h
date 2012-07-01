@@ -55,9 +55,11 @@ int tests_run;
 //==============================================================================
 
 #define mu_assert_mem(PTR, COUNT, BYTES) do {\
+    char *chars = BYTES; \
+    uint8_t *bytes = (uint8_t*)chars; \
     int i; \
     for(i=0; i<COUNT; i++) { \
-        if(((uint8_t*)PTR)[i] != ((uint8_t*)BYTES)[i]) { \
+        if(((uint8_t*)PTR)[i] != bytes[i]) { \
             mu_fail("Memory does not match at byte: %d", i); \
         } \
     } \
