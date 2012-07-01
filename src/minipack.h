@@ -128,4 +128,19 @@ void minipack_int64_write(void *ptr, int64_t value);
 void minipack_nil_write(void *ptr);
 
 
+//==============================================================================
+//
+// Boolean
+//
+//==============================================================================
+
+//======================================
+// Nil
+//======================================
+
+bool minipack_bool_read(void *ptr);
+
+void minipack_bool_write(void *ptr, bool value);
+
+
 #endif

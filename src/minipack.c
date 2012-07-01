@@ -48,6 +48,11 @@
 #define NIL_SIZE                1
 
 
+#define TRUE_TYPE                0xC3
+#define FALSE_TYPE               0xC2
+#define BOOL_SIZE                1
+
+
 
 //==============================================================================
 //
@@ -370,4 +375,38 @@ void minipack_int64_write(void *ptr, int64_t value)
 void minipack_nil_write(void *ptr)
 {
     *((uint8_t*)ptr) = NIL_TYPE;
+}
+
+
+//==============================================================================
+//
+// Boolean
+//
+//==============================================================================
+
+//--------------------------------------
+// Boolean
+//--------------------------------------
+
+// Reads a boolean from a given memory address.
+//
+// ptr - A pointer to where the boolean should be read from.
+//
+// Returns a boolean value.
+bool minipack_bool_read(void *ptr)
+{
+    return (*(uint8_t*)ptr == TRUE_TYPE);
+}
+
+// Writes a boolean to a given memory address.
+//
+// ptr - A pointer to where the boolean should be written to.
+void minipack_bool_write(void *ptr, bool value)
+{
+    if(value) {
+        *((uint8_t*)ptr) = TRUE_TYPE;
+    }
+    else {
+        *((uint8_t*)ptr) = FALSE_TYPE;
+    }
 }
