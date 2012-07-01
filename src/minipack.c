@@ -117,6 +117,22 @@
 #define ARRAY32_HDRSIZE         5
 
 
+//--------------------------------------
+// Map
+//--------------------------------------
+
+#define FIXMAP_TYPE             0x80
+#define FIXMAP_TYPE_MASK        0xF0
+#define FIXMAP_VALUE_MASK       0x0F
+#define FIXMAP_HDRSIZE          1
+
+#define MAP16_TYPE              0xDE
+#define MAP16_HDRSIZE           3
+
+#define MAP32_TYPE              0xDF
+#define MAP32_HDRSIZE           5
+
+
 //==============================================================================
 //
 // Byte Order
@@ -704,6 +720,86 @@ void minipack_array32_write_header(void *ptr, uint32_t count)
 {
     // Write header.
     *((uint8_t*)ptr)      = ARRAY32_TYPE;
+    *((uint32_t*)(ptr+1)) = htonl(count);
+}
+
+
+//==============================================================================
+//
+// Map
+//
+//==============================================================================
+
+//--------------------------------------
+// Fix map
+//--------------------------------------
+
+// Reads the number of elements in a fix map from a given memory address.
+//
+// ptr - A pointer to where the fix map should be read from.
+//
+// Returns the number of elements in the map.
+uint8_t minipack_fixmap_read_count(void *ptr)
+{
+    return *((uint8_t*)ptr) & FIXMAP_VALUE_MASK;
+}
+
+// Writes a fix map header to a given memory address.
+//
+// ptr   - A pointer to where the header should be written to.
+// count - The number of elements in the map.
+void minipack_fixmap_write_header(void *ptr, uint8_t count)
+{
+    *((uint8_t*)ptr) = (count & FIXMAP_VALUE_MASK) | FIXMAP_TYPE;
+}
+
+
+//--------------------------------------
+// Map 16
+//--------------------------------------
+
+// Reads the number of elements in an map 16 from a given memory address.
+//
+// ptr - A pointer to where the map 16 should be read from.
+//
+// Returns the number of elements in the map.
+uint16_t minipack_map16_read_count(void *ptr)
+{
+    return ntohs(*((uint16_t*)(ptr+1)));
+}
+
+// Writes an map 16 header to a given memory address.
+//
+// ptr - A pointer to where the header should be written to.
+void minipack_map16_write_header(void *ptr, uint16_t count)
+{
+    // Write header.
+    *((uint8_t*)ptr)      = MAP16_TYPE;
+    *((uint16_t*)(ptr+1)) = htons(count);
+}
+
+
+//--------------------------------------
+// Map 32
+//--------------------------------------
+
+// Reads the number of elements in an map 32 from a given memory address.
+//
+// ptr - A pointer to where the map 32 should be read from.
+//
+// Returns the number of elements in the map
+uint32_t minipack_map32_read_count(void *ptr)
+{
+    return ntohl(*((uint32_t*)(ptr+1)));
+}
+
+// Writes an map 32 header to a given memory address.
+//
+// ptr - A pointer to where the header should be written to.
+void minipack_map32_write_header(void *ptr, uint32_t count)
+{
+    // Write header.
+    *((uint8_t*)ptr)      = MAP32_TYPE;
     *((uint32_t*)(ptr+1)) = htonl(count);
 }
 

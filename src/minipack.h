@@ -235,4 +235,38 @@ uint32_t minipack_array32_read_count(void *ptr);
 void minipack_array32_write_header(void *ptr, uint32_t count);
 
 
+
+//==============================================================================
+//
+// Map
+//
+//==============================================================================
+
+//======================================
+// Fix map
+//======================================
+
+uint8_t minipack_fixmap_read_count(void *ptr);
+
+void minipack_fixmap_write_header(void *ptr, uint8_t count);
+
+
+//======================================
+// Map 16
+//======================================
+
+uint16_t minipack_map16_read_count(void *ptr);
+
+void minipack_map16_write_header(void *ptr, uint16_t count);
+
+
+//======================================
+// Map 32
+//======================================
+
+uint32_t minipack_map32_read_count(void *ptr);
+
+void minipack_map32_write_header(void *ptr, uint32_t count);
+
+
 #endif
