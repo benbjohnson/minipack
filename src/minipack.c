@@ -37,6 +37,9 @@
 #define INT16_TYPE              0xD1
 #define INT16_SIZE              3
 
+#define INT32_TYPE              0xD2
+#define INT32_SIZE              5
+
 
 
 //==============================================================================
@@ -293,5 +296,29 @@ void mpack_int16_write(void *ptr, int16_t value)
 {
     *((uint8_t*)ptr)     = INT16_TYPE;
     *((int16_t*)(ptr+1)) = htons(value);
+}
+
+
+//--------------------------------------
+// Signed Int (32-bit)
+//--------------------------------------
+
+// Reads an signed 32-bit integer from a given memory address.
+//
+// ptr - A pointer to where the signed int should be read from.
+//
+// Returns an signed 32-bit integer value.
+int32_t mpack_int32_read(void *ptr)
+{
+    return ntohl(*((int32_t*)(ptr+1)));
+}
+
+// Writes an signed 32-bit integer to a given memory address.
+//
+// ptr - A pointer to where the integer should be written to.
+void mpack_int32_write(void *ptr, int32_t value)
+{
+    *((uint8_t*)ptr)     = INT32_TYPE;
+    *((int32_t*)(ptr+1)) = htonl(value);
 }
 

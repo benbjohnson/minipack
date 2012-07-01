@@ -97,5 +97,14 @@ int16_t mpack_int16_read(void *ptr);
 void mpack_int16_write(void *ptr, int16_t value);
 
 
+//======================================
+// Signed Int (32-bit)
+//======================================
+
+int32_t mpack_int32_read(void *ptr);
+
+void mpack_int32_write(void *ptr, int32_t value);
+
+
 
 #endif
