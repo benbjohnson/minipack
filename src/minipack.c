@@ -16,6 +16,10 @@
 //
 //==============================================================================
 
+//--------------------------------------
+// Positive Fixnum
+//--------------------------------------
+
 // Reads a positive fixnum from a given memory address.
 //
 // ptr - A pointer to where the fixnum should be read from.
@@ -25,4 +29,12 @@ uint8_t minipack_pfixnum_read(void *ptr)
 {
     int8_t value = *((int8_t*)ptr);
     return value & PFIXNUM_VALUE_MASK;
+}
+
+// Writes a positive fixnum to a given memory address.
+//
+// ptr - A pointer to where the fixnum should be written to.
+void minipack_pfixnum_write(void *ptr, uint8_t value)
+{
+    *((int8_t*)ptr) = value & PFIXNUM_VALUE_MASK;
 }
