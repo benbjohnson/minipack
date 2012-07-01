@@ -88,5 +88,14 @@ int8_t mpack_int8_read(void *ptr);
 void mpack_int8_write(void *ptr, int8_t value);
 
 
+//======================================
+// Signed Int (16-bit)
+//======================================
+
+int16_t mpack_int16_read(void *ptr);
+
+void mpack_int16_write(void *ptr, int16_t value);
+
+
 
 #endif

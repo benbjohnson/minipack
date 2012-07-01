@@ -34,6 +34,9 @@
 #define INT8_TYPE               0xD0
 #define INT8_SIZE               2
 
+#define INT16_TYPE              0xD1
+#define INT16_SIZE              3
+
 
 
 //==============================================================================
@@ -266,5 +269,29 @@ void mpack_int8_write(void *ptr, int8_t value)
 {
     *((uint8_t*)ptr)    = INT8_TYPE;
     *((int8_t*)(ptr+1)) = value;
+}
+
+
+//--------------------------------------
+// Signed Int (16-bit)
+//--------------------------------------
+
+// Reads an signed 16-bit integer from a given memory address.
+//
+// ptr - A pointer to where the signed int should be read from.
+//
+// Returns an signed 16-bit integer value.
+int16_t mpack_int16_read(void *ptr)
+{
+    return ntohs(*((int16_t*)(ptr+1)));
+}
+
+// Writes an signed 16-bit integer to a given memory address.
+//
+// ptr - A pointer to where the integer should be written to.
+void mpack_int16_write(void *ptr, int16_t value)
+{
+    *((uint8_t*)ptr)     = INT16_TYPE;
+    *((int16_t*)(ptr+1)) = htons(value);
 }
 
