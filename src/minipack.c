@@ -1,5 +1,6 @@
 #include "minipack.h"
 #include "string.h"
+#include "../tests/memdump.h"
 
 //==============================================================================
 //
@@ -60,10 +61,16 @@
 #define DOUBLE_SIZE             9
 
 
-#define FIXRAW_TYPE         0xA0
-#define FIXRAW_TYPE_MASK    0xE0
-#define FIXRAW_VALUE_MASK   0x1F
-#define FIXRAW_SIZE         1
+#define FIXRAW_TYPE             0xA0
+#define FIXRAW_TYPE_MASK        0xE0
+#define FIXRAW_VALUE_MASK       0x1F
+#define FIXRAW_SIZE             1
+
+#define RAW16_TYPE              0xDA
+#define RAW16_HDRSIZE           3
+
+#define RAW32_TYPE              0xDB
+#define RAW32_HDRSIZE           5
 
 
 //==============================================================================
@@ -517,5 +524,33 @@ void minipack_fixraw_write(void *ptr, uint8_t length, void *bytes)
     
     // Write raw bytes.
     memmove(ptr+1, bytes, length);
+}
+
+
+//--------------------------------------
+// Raw 16
+//--------------------------------------
+
+// Reads the number of bytes in a raw 16 from a given memory address.
+//
+// ptr - A pointer to where the raw 16 should be read from.
+//
+// Returns the length of the bytes.
+uint16_t minipack_raw16_read_length(void *ptr)
+{
+    return ntohs(*((uint16_t*)(ptr+1)));
+}
+
+// Writes a raw 16 byte array to a given memory address.
+//
+// ptr - A pointer to where the bytes should be written to.
+void minipack_raw16_write(void *ptr, uint16_t length, void *bytes)
+{
+    // Write header.
+    *((uint8_t*)ptr)      = RAW16_TYPE;
+    *((uint16_t*)(ptr+1)) = htons(length);
+    
+    // Write raw bytes.
+    memmove(ptr+RAW16_HDRSIZE, bytes, length);
 }
 

@@ -183,4 +183,13 @@ uint8_t minipack_fixraw_read_length(void *ptr);
 void minipack_fixraw_write(void *ptr, uint8_t length, void *bytes);
 
 
+//======================================
+// Raw 16
+//======================================
+
+uint16_t minipack_raw16_read_length(void *ptr);
+
+void minipack_raw16_write(void *ptr, uint16_t length, void *bytes);
+
+
 #endif
