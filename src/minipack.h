@@ -192,4 +192,13 @@ uint16_t minipack_raw16_read_length(void *ptr);
 void minipack_raw16_write(void *ptr, uint16_t length, void *bytes);
 
 
+//======================================
+// Raw 32
+//======================================
+
+uint32_t minipack_raw32_read_length(void *ptr);
+
+void minipack_raw32_write(void *ptr, uint32_t length, void *bytes);
+
+
 #endif

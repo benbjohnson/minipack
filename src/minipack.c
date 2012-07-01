@@ -554,3 +554,31 @@ void minipack_raw16_write(void *ptr, uint16_t length, void *bytes)
     memmove(ptr+RAW16_HDRSIZE, bytes, length);
 }
 
+
+//--------------------------------------
+// Raw 32
+//--------------------------------------
+
+// Reads the number of bytes in a raw 32 from a given memory address.
+//
+// ptr - A pointer to where the raw 32 should be read from.
+//
+// Returns the length of the bytes.
+uint32_t minipack_raw32_read_length(void *ptr)
+{
+    return ntohl(*((uint32_t*)(ptr+1)));
+}
+
+// Writes a raw 32 byte array to a given memory address.
+//
+// ptr - A pointer to where the bytes should be written to.
+void minipack_raw32_write(void *ptr, uint32_t length, void *bytes)
+{
+    // Write header.
+    *((uint8_t*)ptr)      = RAW32_TYPE;
+    *((uint32_t*)(ptr+1)) = htonl(length);
+    
+    // Write raw bytes.
+    memmove(ptr+RAW32_HDRSIZE, bytes, length);
+}
+
