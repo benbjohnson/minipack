@@ -40,6 +40,9 @@
 #define INT32_TYPE              0xD2
 #define INT32_SIZE              5
 
+#define INT64_TYPE              0xD3
+#define INT64_SIZE              9
+
 
 
 //==============================================================================
@@ -320,5 +323,29 @@ void mpack_int32_write(void *ptr, int32_t value)
 {
     *((uint8_t*)ptr)     = INT32_TYPE;
     *((int32_t*)(ptr+1)) = htonl(value);
+}
+
+
+//--------------------------------------
+// Signed Int (64-bit)
+//--------------------------------------
+
+// Reads an signed 64-bit integer from a given memory address.
+//
+// ptr - A pointer to where the signed int should be read from.
+//
+// Returns an signed 64-bit integer value.
+int64_t mpack_int64_read(void *ptr)
+{
+    return ntohll(*((int64_t*)(ptr+1)));
+}
+
+// Writes an signed 64-bit integer to a given memory address.
+//
+// ptr - A pointer to where the integer should be written to.
+void mpack_int64_write(void *ptr, int64_t value)
+{
+    *((uint8_t*)ptr)     = INT64_TYPE;
+    *((int64_t*)(ptr+1)) = htonll(value);
 }
 
