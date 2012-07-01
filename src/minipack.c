@@ -53,6 +53,12 @@
 #define BOOL_SIZE                1
 
 
+#define FLOAT_TYPE              0xCA
+#define FLOAT_SIZE              5
+
+#define DOUBLE_TYPE             0xCB
+#define DOUBLE_SIZE             9
+
 
 //==============================================================================
 //
@@ -409,4 +415,38 @@ void minipack_bool_write(void *ptr, bool value)
     else {
         *((uint8_t*)ptr) = FALSE_TYPE;
     }
+}
+
+
+//==============================================================================
+//
+// Floating-point
+//
+//==============================================================================
+
+//--------------------------------------
+// Float
+//--------------------------------------
+
+// Reads a float from a given memory address.
+//
+// ptr - A pointer to where the float should be read from.
+//
+// Returns a float value.
+float minipack_float_read(void *ptr)
+{
+    // Cast bytes to int32 to use ntohl.
+    uint32_t value = *((uint32_t*)(ptr+1));
+    value = ntohl(value);
+    return *((float*)&value);
+}
+
+// Writes a float to a given memory address.
+//
+// ptr - A pointer to where the float should be written to.
+void minipack_float_write(void *ptr, float value)
+{
+    uint32_t bytes = htonl(*((uint32_t*)&value));
+    *((uint8_t*)ptr)   = FLOAT_TYPE;
+    *((float*)(ptr+1)) = *((float*)&bytes);
 }

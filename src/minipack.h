@@ -143,4 +143,19 @@ bool minipack_bool_read(void *ptr);
 void minipack_bool_write(void *ptr, bool value);
 
 
+//==============================================================================
+//
+// Floating-point
+//
+//==============================================================================
+
+//======================================
+// Float
+//======================================
+
+float minipack_float_read(void *ptr);
+
+void minipack_float_write(void *ptr, float value);
+
+
 #endif
