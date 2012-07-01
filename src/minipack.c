@@ -8,6 +8,10 @@
 //
 //==============================================================================
 
+//--------------------------------------
+// Fixnum
+//--------------------------------------
+
 #define POS_FIXNUM_TYPE         0x00
 #define POS_FIXNUM_TYPE_MASK    0x80
 #define POS_FIXNUM_VALUE_MASK   0x7F
@@ -18,6 +22,10 @@
 #define NEG_FIXNUM_VALUE_MASK   0x1F
 #define NEG_FIXNUM_SIZE         1
 
+
+//--------------------------------------
+// Unsigned integers
+//--------------------------------------
 
 #define UINT8_TYPE              0xCC
 #define UINT8_SIZE              2
@@ -32,6 +40,10 @@
 #define UINT64_SIZE             9
 
 
+//--------------------------------------
+// Signed integers
+//--------------------------------------
+
 #define INT8_TYPE               0xD0
 #define INT8_SIZE               2
 
@@ -45,14 +57,26 @@
 #define INT64_SIZE              9
 
 
+//--------------------------------------
+// Nil
+//--------------------------------------
+
 #define NIL_TYPE                0xC0
 #define NIL_SIZE                1
 
+
+//--------------------------------------
+// Boolean
+//--------------------------------------
 
 #define TRUE_TYPE                0xC3
 #define FALSE_TYPE               0xC2
 #define BOOL_SIZE                1
 
+
+//--------------------------------------
+// Floating point
+//--------------------------------------
 
 #define FLOAT_TYPE              0xCA
 #define FLOAT_SIZE              5
@@ -61,16 +85,31 @@
 #define DOUBLE_SIZE             9
 
 
+//--------------------------------------
+// Raw bytes
+//--------------------------------------
+
 #define FIXRAW_TYPE             0xA0
 #define FIXRAW_TYPE_MASK        0xE0
 #define FIXRAW_VALUE_MASK       0x1F
-#define FIXRAW_SIZE             1
+#define FIXRAW_HDRSIZE          1
 
 #define RAW16_TYPE              0xDA
 #define RAW16_HDRSIZE           3
 
 #define RAW32_TYPE              0xDB
 #define RAW32_HDRSIZE           5
+
+
+//--------------------------------------
+// Array
+//--------------------------------------
+
+#define FIXARRAY_TYPE           0x90
+#define FIXARRAY_TYPE_MASK      0xF0
+#define FIXARRAY_VALUE_MASK     0x0F
+#define FIXARRAY_HDRSIZE        1
+
 
 
 //==============================================================================
@@ -582,3 +621,33 @@ void minipack_raw32_write(void *ptr, uint32_t length, void *bytes)
     memmove(ptr+RAW32_HDRSIZE, bytes, length);
 }
 
+
+
+//==============================================================================
+//
+// Array
+//
+//==============================================================================
+
+//--------------------------------------
+// Fix array
+//--------------------------------------
+
+// Reads the number of elements in a fix array from a given memory address.
+//
+// ptr - A pointer to where the fix array should be read from.
+//
+// Returns the number of elements in the array.
+uint8_t minipack_fixarray_read_count(void *ptr)
+{
+    return *((uint8_t*)ptr) & FIXARRAY_VALUE_MASK;
+}
+
+// Writes a fix array header to a given memory address.
+//
+// ptr   - A pointer to where the header should be written to.
+// count - The number of elements in the array.
+void minipack_fixarray_write_header(void *ptr, uint8_t count)
+{
+    *((uint8_t*)ptr) = (count & FIXARRAY_VALUE_MASK) | FIXARRAY_TYPE;
+}

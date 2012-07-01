@@ -201,4 +201,20 @@ uint32_t minipack_raw32_read_length(void *ptr);
 void minipack_raw32_write(void *ptr, uint32_t length, void *bytes);
 
 
+
+//==============================================================================
+//
+// Array
+//
+//==============================================================================
+
+//======================================
+// Fix array
+//======================================
+
+uint8_t minipack_fixarray_read_count(void *ptr);
+
+void minipack_fixarray_write_header(void *ptr, uint8_t count);
+
+
 #endif
