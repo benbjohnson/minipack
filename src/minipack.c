@@ -44,6 +44,10 @@
 #define INT64_SIZE              9
 
 
+#define NIL_TYPE                0xC0
+#define NIL_SIZE                1
+
+
 
 //==============================================================================
 //
@@ -349,3 +353,21 @@ void minipack_int64_write(void *ptr, int64_t value)
     *((int64_t*)(ptr+1)) = htonll(value);
 }
 
+
+//==============================================================================
+//
+// Nil
+//
+//==============================================================================
+
+//--------------------------------------
+// Nil
+//--------------------------------------
+
+// Writes a nil to a given memory address.
+//
+// ptr - A pointer to where the nil should be written to.
+void minipack_nil_write(void *ptr)
+{
+    *((uint8_t*)ptr) = NIL_TYPE;
+}
