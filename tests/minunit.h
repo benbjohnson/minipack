@@ -46,3 +46,19 @@
 
 int tests_run;
 
+
+
+//==============================================================================
+//
+// Minunit
+//
+//==============================================================================
+
+#define mu_assert_mem(PTR, COUNT, BYTES) do {\
+    int i; \
+    for(i=0; i<COUNT; i++) { \
+        if(((uint8_t*)PTR)[i] != ((uint8_t*)BYTES)[i]) { \
+            mu_fail("Memory does not match at byte: %d", i); \
+        } \
+    } \
+} while(0)
