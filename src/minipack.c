@@ -17,6 +17,7 @@
 #define NEG_FIXNUM_VALUE_MASK   0x1F
 #define NEG_FIXNUM_SIZE         1
 
+
 #define UINT8_TYPE              0xCC
 #define UINT8_SIZE              2
 
@@ -28,6 +29,11 @@
 
 #define UINT64_TYPE             0xCF
 #define UINT64_SIZE             9
+
+
+#define INT8_TYPE               0xD0
+#define INT8_SIZE               2
+
 
 
 //==============================================================================
@@ -75,7 +81,7 @@ uint64_t bswap64(uint64_t value)
 
 //==============================================================================
 //
-// Functions
+// Fixnum
 //
 //==============================================================================
 
@@ -126,6 +132,13 @@ void mpack_neg_fixnum_write(void *ptr, int8_t value)
     *((int8_t*)ptr) = (((value * -1) - 1) & NEG_FIXNUM_VALUE_MASK) | NEG_FIXNUM_TYPE;
 }
 
+
+
+//==============================================================================
+//
+// Unsigned Integers
+//
+//==============================================================================
 
 //--------------------------------------
 // Unsigned Int (8-bit)
@@ -224,3 +237,34 @@ void mpack_uint64_write(void *ptr, uint64_t value)
     *((uint8_t*)ptr)      = UINT64_TYPE;
     *((uint64_t*)(ptr+1)) = htonll(value);
 }
+
+
+//==============================================================================
+//
+// Signed Integers
+//
+//==============================================================================
+
+//--------------------------------------
+// Signed Int (8-bit)
+//--------------------------------------
+
+// Reads an signed 8-bit integer from a given memory address.
+//
+// ptr - A pointer to where the signed int should be read from.
+//
+// Returns an signed 8-bit integer value.
+int8_t mpack_int8_read(void *ptr)
+{
+    return *((int8_t*)(ptr+1));
+}
+
+// Writes an signed 8-bit integer to a given memory address.
+//
+// ptr - A pointer to where the integer should be written to.
+void mpack_int8_write(void *ptr, int8_t value)
+{
+    *((uint8_t*)ptr)    = INT8_TYPE;
+    *((int8_t*)(ptr+1)) = value;
+}
+
