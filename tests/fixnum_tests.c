@@ -15,21 +15,21 @@
 
 int test_pos_fixnum_read() {
     uint8_t data[] = {0x00, 0x02, 0x14, 0x7F, 0x80};
-    mu_assert(mpack_pos_fixnum_read(data+0) == 0);
-    mu_assert(mpack_pos_fixnum_read(data+1) == 2);
-    mu_assert(mpack_pos_fixnum_read(data+2) == 20);
-    mu_assert(mpack_pos_fixnum_read(data+3) == 127);
-    mu_assert(mpack_pos_fixnum_read(data+4) == 0);
+    mu_assert(minipack_pos_fixnum_read(data+0) == 0);
+    mu_assert(minipack_pos_fixnum_read(data+1) == 2);
+    mu_assert(minipack_pos_fixnum_read(data+2) == 20);
+    mu_assert(minipack_pos_fixnum_read(data+3) == 127);
+    mu_assert(minipack_pos_fixnum_read(data+4) == 0);
     return 0;
 }
 
 int test_pos_fixnum_write() {
     uint8_t data[] = {0x00, 0x00, 0x00, 0x00, 0x00};
-    mpack_pos_fixnum_write(data+0, 0);
-    mpack_pos_fixnum_write(data+1, 2);
-    mpack_pos_fixnum_write(data+2, 20);
-    mpack_pos_fixnum_write(data+3, 127);
-    mpack_pos_fixnum_write(data+4, 128);
+    minipack_pos_fixnum_write(data+0, 0);
+    minipack_pos_fixnum_write(data+1, 2);
+    minipack_pos_fixnum_write(data+2, 20);
+    minipack_pos_fixnum_write(data+3, 127);
+    minipack_pos_fixnum_write(data+4, 128);
     mu_assert(data[0] == 0x00);
     mu_assert(data[1] == 0x02);
     mu_assert(data[2] == 0x14);
@@ -45,19 +45,19 @@ int test_pos_fixnum_write() {
 
 int test_neg_fixnum_read() {
     uint8_t data[] = {0xE0, 0xE2, 0xF3, 0xFF};
-    mu_assert(mpack_neg_fixnum_read(data+0) == -1);
-    mu_assert(mpack_neg_fixnum_read(data+1) == -3);
-    mu_assert(mpack_neg_fixnum_read(data+2) == -20);
-    mu_assert(mpack_neg_fixnum_read(data+3) == -32);
+    mu_assert(minipack_neg_fixnum_read(data+0) == -1);
+    mu_assert(minipack_neg_fixnum_read(data+1) == -3);
+    mu_assert(minipack_neg_fixnum_read(data+2) == -20);
+    mu_assert(minipack_neg_fixnum_read(data+3) == -32);
     return 0;
 }
 
 int test_neg_fixnum_write() {
     uint8_t data[] = {0x00, 0x00, 0x00, 0x00};
-    mpack_neg_fixnum_write(data+0, -1);
-    mpack_neg_fixnum_write(data+1, -3);
-    mpack_neg_fixnum_write(data+2, -20);
-    mpack_neg_fixnum_write(data+3, -32);
+    minipack_neg_fixnum_write(data+0, -1);
+    minipack_neg_fixnum_write(data+1, -3);
+    minipack_neg_fixnum_write(data+2, -20);
+    minipack_neg_fixnum_write(data+3, -32);
     mu_assert(data[0] == 0xE0);
     mu_assert(data[1] == 0xE2);
     mu_assert(data[2] == 0xF3);

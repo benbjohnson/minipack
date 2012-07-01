@@ -103,7 +103,7 @@ uint64_t bswap64(uint64_t value)
 // ptr - A pointer to where the fixnum should be read from.
 //
 // Returns an unsigned 8-bit integer value for the fixnum.
-uint8_t mpack_pos_fixnum_read(void *ptr)
+uint8_t minipack_pos_fixnum_read(void *ptr)
 {
     int8_t value = *((uint8_t*)ptr);
     return value & POS_FIXNUM_VALUE_MASK;
@@ -112,7 +112,7 @@ uint8_t mpack_pos_fixnum_read(void *ptr)
 // Writes a positive fixnum to a given memory address.
 //
 // ptr - A pointer to where the fixnum should be written to.
-void mpack_pos_fixnum_write(void *ptr, uint8_t value)
+void minipack_pos_fixnum_write(void *ptr, uint8_t value)
 {
     *((uint8_t*)ptr) = value & POS_FIXNUM_VALUE_MASK;
 }
@@ -127,7 +127,7 @@ void mpack_pos_fixnum_write(void *ptr, uint8_t value)
 // ptr - A pointer to where the fixnum should be read from.
 //
 // Returns a signed 8-bit integer value for the fixnum.
-int8_t mpack_neg_fixnum_read(void *ptr)
+int8_t minipack_neg_fixnum_read(void *ptr)
 {
     int8_t value = *((int8_t*)ptr);
     return ((value & NEG_FIXNUM_VALUE_MASK) + 1) * -1;
@@ -136,7 +136,7 @@ int8_t mpack_neg_fixnum_read(void *ptr)
 // Writes a negative fixnum from a given memory address.
 //
 // ptr - A pointer to where the fixnum should be written to.
-void mpack_neg_fixnum_write(void *ptr, int8_t value)
+void minipack_neg_fixnum_write(void *ptr, int8_t value)
 {
     *((int8_t*)ptr) = (((value * -1) - 1) & NEG_FIXNUM_VALUE_MASK) | NEG_FIXNUM_TYPE;
 }
@@ -158,7 +158,7 @@ void mpack_neg_fixnum_write(void *ptr, int8_t value)
 // ptr - A pointer to where the unsigned int should be read from.
 //
 // Returns an unsigned 8-bit integer value.
-uint8_t mpack_uint8_read(void *ptr)
+uint8_t minipack_uint8_read(void *ptr)
 {
     return *((uint8_t*)(ptr+1));
 }
@@ -166,7 +166,7 @@ uint8_t mpack_uint8_read(void *ptr)
 // Writes an unsigned 8-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void mpack_uint8_write(void *ptr, uint8_t value)
+void minipack_uint8_write(void *ptr, uint8_t value)
 {
     *((uint8_t*)ptr)     = UINT8_TYPE;
     *((uint8_t*)(ptr+1)) = value;
@@ -182,7 +182,7 @@ void mpack_uint8_write(void *ptr, uint8_t value)
 // ptr - A pointer to where the unsigned int should be read from.
 //
 // Returns an unsigned 16-bit integer value.
-uint16_t mpack_uint16_read(void *ptr)
+uint16_t minipack_uint16_read(void *ptr)
 {
     uint16_t value = *((uint16_t*)(ptr+1));
     return ntohs(value);
@@ -191,7 +191,7 @@ uint16_t mpack_uint16_read(void *ptr)
 // Writes an unsigned 16-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void mpack_uint16_write(void *ptr, uint16_t value)
+void minipack_uint16_write(void *ptr, uint16_t value)
 {
     *((uint8_t*)ptr)      = UINT16_TYPE;
     *((uint16_t*)(ptr+1)) = htons(value);
@@ -207,7 +207,7 @@ void mpack_uint16_write(void *ptr, uint16_t value)
 // ptr - A pointer to where the unsigned int should be read from.
 //
 // Returns an unsigned 32-bit integer value.
-uint32_t mpack_uint32_read(void *ptr)
+uint32_t minipack_uint32_read(void *ptr)
 {
     uint32_t value = *((uint32_t*)(ptr+1));
     return ntohl(value);
@@ -216,7 +216,7 @@ uint32_t mpack_uint32_read(void *ptr)
 // Writes an unsigned 32-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void mpack_uint32_write(void *ptr, uint32_t value)
+void minipack_uint32_write(void *ptr, uint32_t value)
 {
     *((uint8_t*)ptr)      = UINT32_TYPE;
     *((uint32_t*)(ptr+1)) = htonl(value);
@@ -232,7 +232,7 @@ void mpack_uint32_write(void *ptr, uint32_t value)
 // ptr - A pointer to where the unsigned int should be read from.
 //
 // Returns an unsigned 64-bit integer value.
-uint64_t mpack_uint64_read(void *ptr)
+uint64_t minipack_uint64_read(void *ptr)
 {
     uint64_t value = *((uint64_t*)(ptr+1));
     return ntohll(value);
@@ -241,7 +241,7 @@ uint64_t mpack_uint64_read(void *ptr)
 // Writes an unsigned 64-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void mpack_uint64_write(void *ptr, uint64_t value)
+void minipack_uint64_write(void *ptr, uint64_t value)
 {
     *((uint8_t*)ptr)      = UINT64_TYPE;
     *((uint64_t*)(ptr+1)) = htonll(value);
@@ -263,7 +263,7 @@ void mpack_uint64_write(void *ptr, uint64_t value)
 // ptr - A pointer to where the signed int should be read from.
 //
 // Returns an signed 8-bit integer value.
-int8_t mpack_int8_read(void *ptr)
+int8_t minipack_int8_read(void *ptr)
 {
     return *((int8_t*)(ptr+1));
 }
@@ -271,7 +271,7 @@ int8_t mpack_int8_read(void *ptr)
 // Writes an signed 8-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void mpack_int8_write(void *ptr, int8_t value)
+void minipack_int8_write(void *ptr, int8_t value)
 {
     *((uint8_t*)ptr)    = INT8_TYPE;
     *((int8_t*)(ptr+1)) = value;
@@ -287,7 +287,7 @@ void mpack_int8_write(void *ptr, int8_t value)
 // ptr - A pointer to where the signed int should be read from.
 //
 // Returns an signed 16-bit integer value.
-int16_t mpack_int16_read(void *ptr)
+int16_t minipack_int16_read(void *ptr)
 {
     return ntohs(*((int16_t*)(ptr+1)));
 }
@@ -295,7 +295,7 @@ int16_t mpack_int16_read(void *ptr)
 // Writes an signed 16-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void mpack_int16_write(void *ptr, int16_t value)
+void minipack_int16_write(void *ptr, int16_t value)
 {
     *((uint8_t*)ptr)     = INT16_TYPE;
     *((int16_t*)(ptr+1)) = htons(value);
@@ -311,7 +311,7 @@ void mpack_int16_write(void *ptr, int16_t value)
 // ptr - A pointer to where the signed int should be read from.
 //
 // Returns an signed 32-bit integer value.
-int32_t mpack_int32_read(void *ptr)
+int32_t minipack_int32_read(void *ptr)
 {
     return ntohl(*((int32_t*)(ptr+1)));
 }
@@ -319,7 +319,7 @@ int32_t mpack_int32_read(void *ptr)
 // Writes an signed 32-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void mpack_int32_write(void *ptr, int32_t value)
+void minipack_int32_write(void *ptr, int32_t value)
 {
     *((uint8_t*)ptr)     = INT32_TYPE;
     *((int32_t*)(ptr+1)) = htonl(value);
@@ -335,7 +335,7 @@ void mpack_int32_write(void *ptr, int32_t value)
 // ptr - A pointer to where the signed int should be read from.
 //
 // Returns an signed 64-bit integer value.
-int64_t mpack_int64_read(void *ptr)
+int64_t minipack_int64_read(void *ptr)
 {
     return ntohll(*((int64_t*)(ptr+1)));
 }
@@ -343,7 +343,7 @@ int64_t mpack_int64_read(void *ptr)
 // Writes an signed 64-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void mpack_int64_write(void *ptr, int64_t value)
+void minipack_int64_write(void *ptr, int64_t value)
 {
     *((uint8_t*)ptr)     = INT64_TYPE;
     *((int64_t*)(ptr+1)) = htonll(value);
