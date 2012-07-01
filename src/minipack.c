@@ -110,6 +110,11 @@
 #define FIXARRAY_VALUE_MASK     0x0F
 #define FIXARRAY_HDRSIZE        1
 
+#define ARRAY16_TYPE            0xDC
+#define ARRAY16_HDRSIZE         3
+
+#define ARRAY32_TYPE            0xDD
+#define ARRAY32_HDRSIZE         5
 
 
 //==============================================================================
@@ -651,3 +656,29 @@ void minipack_fixarray_write_header(void *ptr, uint8_t count)
 {
     *((uint8_t*)ptr) = (count & FIXARRAY_VALUE_MASK) | FIXARRAY_TYPE;
 }
+
+
+//--------------------------------------
+// Array 16
+//--------------------------------------
+
+// Reads the number of elements in an array 16 from a given memory address.
+//
+// ptr - A pointer to where the array 16 should be read from.
+//
+// Returns the number of elements in the array
+uint16_t minipack_array16_read_count(void *ptr)
+{
+    return ntohs(*((uint16_t*)(ptr+1)));
+}
+
+// Writes an array 16 header to a given memory address.
+//
+// ptr - A pointer to where the header should be written to.
+void minipack_array16_write_header(void *ptr, uint16_t count)
+{
+    // Write header.
+    *((uint8_t*)ptr)      = ARRAY16_TYPE;
+    *((uint16_t*)(ptr+1)) = htons(count);
+}
+

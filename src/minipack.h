@@ -217,4 +217,13 @@ uint8_t minipack_fixarray_read_count(void *ptr);
 void minipack_fixarray_write_header(void *ptr, uint8_t count);
 
 
+//======================================
+// Array 16
+//======================================
+
+uint16_t minipack_array16_read_count(void *ptr);
+
+void minipack_array16_write_header(void *ptr, uint16_t count);
+
+
 #endif
