@@ -1,3 +1,5 @@
+// minipack v0.1.0
+
 #ifndef _minipack_h
 #define _minipack_h
 

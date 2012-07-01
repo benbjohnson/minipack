@@ -1,3 +1,5 @@
+// minipack v0.1.0
+
 #include "minipack.h"
 #include "string.h"
 #include "../tests/memdump.h"
