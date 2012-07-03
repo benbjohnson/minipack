@@ -320,8 +320,21 @@ void minipack_array32_write_hdr(void *ptr, uint32_t count);
 //==============================================================================
 
 //======================================
+// General
+//======================================
+
+size_t minipack_map_hdr_sizeof(uint32_t count);
+
+uint32_t minipack_map_read_hdr(void *ptr, size_t *hdrsz);
+
+void minipack_map_write_hdr(void *ptr, uint32_t count, size_t *sz);
+
+
+//======================================
 // Fix map
 //======================================
+
+bool minipack_is_fixmap(void *ptr);
 
 uint8_t minipack_fixmap_read_count(void *ptr);
 
@@ -332,6 +345,8 @@ void minipack_fixmap_write_hdr(void *ptr, uint8_t count);
 // Map 16
 //======================================
 
+bool minipack_is_map16(void *ptr);
+
 uint16_t minipack_map16_read_count(void *ptr);
 
 void minipack_map16_write_hdr(void *ptr, uint16_t count);
@@ -340,6 +355,8 @@ void minipack_map16_write_hdr(void *ptr, uint16_t count);
 //======================================
 // Map 32
 //======================================
+
+bool minipack_is_map32(void *ptr);
 
 uint32_t minipack_map32_read_count(void *ptr);
 

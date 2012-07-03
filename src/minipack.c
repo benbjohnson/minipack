@@ -137,12 +137,15 @@
 #define FIXMAP_TYPE_MASK        0xF0
 #define FIXMAP_VALUE_MASK       0x0F
 #define FIXMAP_HDRSIZE          1
+#define FIXMAP_MAXSIZE          15
 
 #define MAP16_TYPE              0xDE
 #define MAP16_HDRSIZE           3
+#define MAP16_MAXSIZE           65535
 
 #define MAP32_TYPE              0xDF
 #define MAP32_HDRSIZE           5
+#define MAP32_MAXSIZE           4294967295
 
 
 //==============================================================================
@@ -1246,8 +1249,93 @@ void minipack_array32_write_hdr(void *ptr, uint32_t count)
 //==============================================================================
 
 //--------------------------------------
+// Map
+//--------------------------------------
+
+// Retrieves the size, in bytes, of how large an element header will be.
+//
+// count - The number of elements in the map.
+//
+// Returns the number of bytes needed for the header.
+size_t minipack_map_hdr_sizeof(uint32_t count)
+{
+    if(count <= FIXMAP_MAXSIZE) {
+        return FIXMAP_HDRSIZE;
+    }
+    else if(count <= MAP16_MAXSIZE) {
+        return MAP16_HDRSIZE;
+    }
+    else if(count <= MAP32_MAXSIZE) {
+        return MAP32_HDRSIZE;
+    }
+
+    return 0;
+}
+
+// Reads the header for an map from a given memory address.
+//
+// ptr   - A pointer to where the map header should be read from.
+// hdrsz - A pointer to where the size of the header will be returned to.
+//
+// Returns the number of elements in the map.
+uint32_t minipack_map_read_hdr(void *ptr, size_t *hdrsz)
+{
+    if(minipack_is_fixmap(ptr)) {
+        *hdrsz = FIXMAP_HDRSIZE;
+        return (uint32_t)minipack_fixmap_read_count(ptr);
+    }
+    else if(minipack_is_map16(ptr)) {
+        *hdrsz = MAP16_HDRSIZE;
+        return (uint32_t)minipack_map16_read_count(ptr);
+    }
+    else if(minipack_is_map32(ptr)) {
+        *hdrsz = MAP32_HDRSIZE;
+        return minipack_map32_read_count(ptr);
+    }
+    else {
+        *hdrsz = 0;
+        return 0;
+    }
+}
+
+// Writes an map header to a given memory address.
+//
+// ptr   - A pointer to where the integer should be written to.
+// count - The number of elements in the map.
+// sz    - A pointer to where the total size of the element will be returned.
+void minipack_map_write_hdr(void *ptr, uint32_t count, size_t *sz)
+{
+    if(count <= FIXMAP_MAXSIZE) {
+        *sz = FIXMAP_HDRSIZE;
+        minipack_fixmap_write_hdr(ptr, (uint8_t)count);
+    }
+    else if(count <= MAP16_MAXSIZE) {
+        *sz = MAP16_HDRSIZE;
+        minipack_map16_write_hdr(ptr, (uint16_t)count);
+    }
+    else if(count <= MAP32_MAXSIZE) {
+        *sz = MAP32_HDRSIZE;
+        minipack_map32_write_hdr(ptr, count);
+    }
+    else {
+        *sz = 0;
+    }
+}
+
+
+//--------------------------------------
 // Fix map
 //--------------------------------------
+
+// Checks if an element is a fixmap type.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is a fixmap, otherwise returns false.
+bool minipack_is_fixmap(void *ptr)
+{
+    return (*((uint8_t*)ptr) & FIXMAP_TYPE_MASK) == FIXMAP_TYPE;
+}
 
 // Reads the number of elements in a fix map from a given memory address.
 //
@@ -1273,6 +1361,16 @@ void minipack_fixmap_write_hdr(void *ptr, uint8_t count)
 // Map 16
 //--------------------------------------
 
+// Checks if an element is an map16 type.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is an map16, otherwise returns false.
+bool minipack_is_map16(void *ptr)
+{
+    return (*((uint8_t*)ptr) == MAP16_TYPE);
+}
+
 // Reads the number of elements in an map 16 from a given memory address.
 //
 // ptr - A pointer to where the map 16 should be read from.
@@ -1297,6 +1395,16 @@ void minipack_map16_write_hdr(void *ptr, uint16_t count)
 //--------------------------------------
 // Map 32
 //--------------------------------------
+
+// Checks if an element is an map32 type.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is an map32, otherwise returns false.
+bool minipack_is_map32(void *ptr)
+{
+    return (*((uint8_t*)ptr) == MAP32_TYPE);
+}
 
 // Reads the number of elements in an map 32 from a given memory address.
 //
