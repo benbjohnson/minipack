@@ -1,6 +1,7 @@
-#include "minunit.h"
 #include <minipack.h>
+#include <msgpack.h>
 
+#include "minunit.h"
 #include "memdump.h"
 
 //==============================================================================
@@ -14,7 +15,9 @@ int test_uint8_read() {
     mu_assert(minipack_uint8_read("\xCC\x02") == 2);
     mu_assert(minipack_uint8_read("\xCC\x14") == 20);
     mu_assert(minipack_uint8_read("\xCC\x7F") == 127);
+    mu_assert_msgpack_uint8(128, 2, "\xCC\x80");
     mu_assert(minipack_uint8_read("\xCC\xFF") == 255);
+    mu_assert_msgpack_uint8(255, 2, "\xCC\xFF");
     return 0;
 }
 

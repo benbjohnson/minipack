@@ -1,6 +1,7 @@
-#include "minunit.h"
 #include <minipack.h>
+#include <msgpack.h>
 
+#include "minunit.h"
 #include "memdump.h"
 
 //==============================================================================
@@ -14,6 +15,7 @@ int test_uint64_read() {
     mu_assert(minipack_uint64_read("\xCF\x00\x00\x00\x00\x00\x00\x00\x02") == 2);
     mu_assert(minipack_uint64_read("\xCF\x00\x00\x00\x00\x00\x00\x40\x23") == 16419);
     mu_assert(minipack_uint64_read("\xCF\x00\x00\xFF\xFF\xFF\xFF\xFF\xFF") == 281474976710655LL);
+    mu_assert_msgpack_uint64(281474976710655LL, 9, "\xCF\x00\x00\xFF\xFF\xFF\xFF\xFF\xFF");
     return 0;
 }
 
