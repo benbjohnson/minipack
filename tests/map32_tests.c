@@ -1,6 +1,7 @@
-#include "minunit.h"
 #include <minipack.h>
+#include <msgpack.h>
 
+#include "minunit.h"
 #include "memdump.h"
 
 //==============================================================================
@@ -13,6 +14,7 @@ int test_map32_read_count() {
     mu_assert(minipack_map32_read_count("\xDF\x00\x00\x00\x00") == 0);
     mu_assert(minipack_map32_read_count("\xDF\x00\x00\x00\x05") == 5);
     mu_assert(minipack_map32_read_count("\xDF\x00\x00\x01\x00") == 256);
+    mu_assert_msgpack_map(65536, 5, "\xDF\x00\x01\x00\x00");
     return 0;
 }
 
