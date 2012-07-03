@@ -17,18 +17,18 @@ int test_fixarray_read_count() {
     return 0;
 }
 
-int test_fixarray_write_header() {
+int test_fixarray_write_hdr() {
     uint8_t data[] = {0x00, 0x00, 0x00, 0x00, 0x00};
 
-    minipack_fixarray_write_header(data, 0);
+    minipack_fixarray_write_hdr(data, 0);
     mu_assert_mem(data, 1, "\x90");
     mu_assert_msgpack_array(0, 1, "\x90");
 
-    minipack_fixarray_write_header(data, 5);
+    minipack_fixarray_write_hdr(data, 5);
     mu_assert_mem(data, 1, "\x95");
     mu_assert_msgpack_array(5, 1, "\x95");
 
-    minipack_fixarray_write_header(data, 15);
+    minipack_fixarray_write_hdr(data, 15);
     mu_assert_mem(data, 1, "\x9F");
     mu_assert_msgpack_array(15, 1, "\x9F");
 
@@ -44,7 +44,7 @@ int test_fixarray_write_header() {
 
 int all_tests() {
     mu_run_test(test_fixarray_read_count);
-    mu_run_test(test_fixarray_write_header);
+    mu_run_test(test_fixarray_write_hdr);
     return 0;
 }
 

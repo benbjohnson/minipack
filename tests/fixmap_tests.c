@@ -20,16 +20,16 @@ int test_fixmap_read_count() {
     return 0;
 }
 
-int test_fixmap_write_header() {
+int test_fixmap_write_hdr() {
     uint8_t data[] = {0x00, 0x00, 0x00, 0x00, 0x00};
 
-    minipack_fixmap_write_header(data, 0);
+    minipack_fixmap_write_hdr(data, 0);
     mu_assert_mem(data, 1, "\x80");
 
-    minipack_fixmap_write_header(data, 5);
+    minipack_fixmap_write_hdr(data, 5);
     mu_assert_mem(data, 1, "\x85");
 
-    minipack_fixmap_write_header(data, 15);
+    minipack_fixmap_write_hdr(data, 15);
     mu_assert_mem(data, 1, "\x8F");
 
     return 0;
@@ -44,7 +44,7 @@ int test_fixmap_write_header() {
 
 int all_tests() {
     mu_run_test(test_fixmap_read_count);
-    mu_run_test(test_fixmap_write_header);
+    mu_run_test(test_fixmap_write_hdr);
     return 0;
 }
 

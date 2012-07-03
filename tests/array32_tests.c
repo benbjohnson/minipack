@@ -18,13 +18,13 @@ int test_array32_read_count() {
     return 0;
 }
 
-int test_array32_write_header() {
+int test_array32_write_hdr() {
     uint8_t data[] = {0x00, 0x00, 0x00, 0x00, 0x00};
 
-    minipack_array32_write_header(data, 0);
+    minipack_array32_write_hdr(data, 0);
     mu_assert_mem(data, 5, "\xDD\x00\x00\x00\x00");
 
-    minipack_array32_write_header(data, 5);
+    minipack_array32_write_hdr(data, 5);
     mu_assert_mem(data, 5, "\xDD\x00\x00\x00\x05");
 
     return 0;
@@ -39,7 +39,7 @@ int test_array32_write_header() {
 
 int all_tests() {
     mu_run_test(test_array32_read_count);
-    mu_run_test(test_array32_write_header);
+    mu_run_test(test_array32_write_hdr);
     return 0;
 }
 

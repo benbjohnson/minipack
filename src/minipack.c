@@ -118,12 +118,15 @@
 #define FIXARRAY_TYPE_MASK      0xF0
 #define FIXARRAY_VALUE_MASK     0x0F
 #define FIXARRAY_HDRSIZE        1
+#define FIXARRAY_MAXSIZE        15
 
 #define ARRAY16_TYPE            0xDC
 #define ARRAY16_HDRSIZE         3
+#define ARRAY16_MAXSIZE         65535
 
 #define ARRAY32_TYPE            0xDD
 #define ARRAY32_HDRSIZE         5
+#define ARRAY32_MAXSIZE         4294967295
 
 
 //--------------------------------------
@@ -1058,8 +1061,93 @@ void minipack_raw32_write(void *ptr, uint32_t length, void *bytes)
 //==============================================================================
 
 //--------------------------------------
+// Array
+//--------------------------------------
+
+// Retrieves the size, in bytes, of how large an element header will be.
+//
+// count - The number of elements in the array.
+//
+// Returns the number of bytes needed for the header.
+size_t minipack_array_hdr_sizeof(uint32_t count)
+{
+    if(count <= FIXARRAY_MAXSIZE) {
+        return FIXARRAY_HDRSIZE;
+    }
+    else if(count <= ARRAY16_MAXSIZE) {
+        return ARRAY16_HDRSIZE;
+    }
+    else if(count <= ARRAY32_MAXSIZE) {
+        return ARRAY32_HDRSIZE;
+    }
+
+    return 0;
+}
+
+// Reads the header for an array from a given memory address.
+//
+// ptr   - A pointer to where the array header should be read from.
+// hdrsz - A pointer to where the size of the header will be returned to.
+//
+// Returns the number of elements in the array.
+uint32_t minipack_array_read_hdr(void *ptr, size_t *hdrsz)
+{
+    if(minipack_is_fixarray(ptr)) {
+        *hdrsz = FIXARRAY_HDRSIZE;
+        return (uint32_t)minipack_fixarray_read_count(ptr);
+    }
+    else if(minipack_is_array16(ptr)) {
+        *hdrsz = ARRAY16_HDRSIZE;
+        return (uint32_t)minipack_array16_read_count(ptr);
+    }
+    else if(minipack_is_array32(ptr)) {
+        *hdrsz = ARRAY32_HDRSIZE;
+        return minipack_array32_read_count(ptr);
+    }
+    else {
+        *hdrsz = 0;
+        return 0;
+    }
+}
+
+// Writes an array header to a given memory address.
+//
+// ptr   - A pointer to where the integer should be written to.
+// count - The number of elements in the array.
+// sz    - A pointer to where the total size of the element will be returned.
+void minipack_array_write_hdr(void *ptr, uint32_t count, size_t *sz)
+{
+    if(count <= FIXARRAY_MAXSIZE) {
+        *sz = FIXARRAY_HDRSIZE;
+        minipack_fixarray_write_hdr(ptr, (uint8_t)count);
+    }
+    else if(count <= ARRAY16_MAXSIZE) {
+        *sz = ARRAY16_HDRSIZE;
+        minipack_array16_write_hdr(ptr, (uint16_t)count);
+    }
+    else if(count <= ARRAY32_MAXSIZE) {
+        *sz = ARRAY32_HDRSIZE;
+        minipack_array32_write_hdr(ptr, count);
+    }
+    else {
+        *sz = 0;
+    }
+}
+
+
+//--------------------------------------
 // Fix array
 //--------------------------------------
+
+// Checks if an element is a fixarray type.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is a fixarray, otherwise returns false.
+bool minipack_is_fixarray(void *ptr)
+{
+    return (*((uint8_t*)ptr) & FIXARRAY_TYPE_MASK) == FIXARRAY_TYPE;
+}
 
 // Reads the number of elements in a fix array from a given memory address.
 //
@@ -1075,7 +1163,7 @@ uint8_t minipack_fixarray_read_count(void *ptr)
 //
 // ptr   - A pointer to where the header should be written to.
 // count - The number of elements in the array.
-void minipack_fixarray_write_header(void *ptr, uint8_t count)
+void minipack_fixarray_write_hdr(void *ptr, uint8_t count)
 {
     *((uint8_t*)ptr) = (count & FIXARRAY_VALUE_MASK) | FIXARRAY_TYPE;
 }
@@ -1084,6 +1172,16 @@ void minipack_fixarray_write_header(void *ptr, uint8_t count)
 //--------------------------------------
 // Array 16
 //--------------------------------------
+
+// Checks if an element is an array16 type.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is an array16, otherwise returns false.
+bool minipack_is_array16(void *ptr)
+{
+    return (*((uint8_t*)ptr) == ARRAY16_TYPE);
+}
 
 // Reads the number of elements in an array 16 from a given memory address.
 //
@@ -1098,7 +1196,7 @@ uint16_t minipack_array16_read_count(void *ptr)
 // Writes an array 16 header to a given memory address.
 //
 // ptr - A pointer to where the header should be written to.
-void minipack_array16_write_header(void *ptr, uint16_t count)
+void minipack_array16_write_hdr(void *ptr, uint16_t count)
 {
     // Write header.
     *((uint8_t*)ptr)      = ARRAY16_TYPE;
@@ -1109,6 +1207,16 @@ void minipack_array16_write_header(void *ptr, uint16_t count)
 //--------------------------------------
 // Array 32
 //--------------------------------------
+
+// Checks if an element is an array32 type.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is an array32, otherwise returns false.
+bool minipack_is_array32(void *ptr)
+{
+    return (*((uint8_t*)ptr) == ARRAY32_TYPE);
+}
 
 // Reads the number of elements in an array 32 from a given memory address.
 //
@@ -1123,7 +1231,7 @@ uint32_t minipack_array32_read_count(void *ptr)
 // Writes an array 32 header to a given memory address.
 //
 // ptr - A pointer to where the header should be written to.
-void minipack_array32_write_header(void *ptr, uint32_t count)
+void minipack_array32_write_hdr(void *ptr, uint32_t count)
 {
     // Write header.
     *((uint8_t*)ptr)      = ARRAY32_TYPE;
@@ -1155,7 +1263,7 @@ uint8_t minipack_fixmap_read_count(void *ptr)
 //
 // ptr   - A pointer to where the header should be written to.
 // count - The number of elements in the map.
-void minipack_fixmap_write_header(void *ptr, uint8_t count)
+void minipack_fixmap_write_hdr(void *ptr, uint8_t count)
 {
     *((uint8_t*)ptr) = (count & FIXMAP_VALUE_MASK) | FIXMAP_TYPE;
 }
@@ -1178,7 +1286,7 @@ uint16_t minipack_map16_read_count(void *ptr)
 // Writes an map 16 header to a given memory address.
 //
 // ptr - A pointer to where the header should be written to.
-void minipack_map16_write_header(void *ptr, uint16_t count)
+void minipack_map16_write_hdr(void *ptr, uint16_t count)
 {
     // Write header.
     *((uint8_t*)ptr)      = MAP16_TYPE;
@@ -1203,7 +1311,7 @@ uint32_t minipack_map32_read_count(void *ptr)
 // Writes an map 32 header to a given memory address.
 //
 // ptr - A pointer to where the header should be written to.
-void minipack_map32_write_header(void *ptr, uint32_t count)
+void minipack_map32_write_hdr(void *ptr, uint32_t count)
 {
     // Write header.
     *((uint8_t*)ptr)      = MAP32_TYPE;

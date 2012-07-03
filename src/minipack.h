@@ -269,30 +269,47 @@ void minipack_raw32_write(void *ptr, uint32_t length, void *bytes);
 //==============================================================================
 
 //======================================
+// General
+//======================================
+
+size_t minipack_array_hdr_sizeof(uint32_t count);
+
+uint32_t minipack_array_read_hdr(void *ptr, size_t *hdrsz);
+
+void minipack_array_write_hdr(void *ptr, uint32_t count, size_t *sz);
+
+
+//======================================
 // Fix array
 //======================================
 
+bool minipack_is_fixarray(void *ptr);
+
 uint8_t minipack_fixarray_read_count(void *ptr);
 
-void minipack_fixarray_write_header(void *ptr, uint8_t count);
+void minipack_fixarray_write_hdr(void *ptr, uint8_t count);
 
 
 //======================================
 // Array 16
 //======================================
 
+bool minipack_is_array16(void *ptr);
+
 uint16_t minipack_array16_read_count(void *ptr);
 
-void minipack_array16_write_header(void *ptr, uint16_t count);
+void minipack_array16_write_hdr(void *ptr, uint16_t count);
 
 
 //======================================
 // Array 32
 //======================================
 
+bool minipack_is_array32(void *ptr);
+
 uint32_t minipack_array32_read_count(void *ptr);
 
-void minipack_array32_write_header(void *ptr, uint32_t count);
+void minipack_array32_write_hdr(void *ptr, uint32_t count);
 
 
 
@@ -308,7 +325,7 @@ void minipack_array32_write_header(void *ptr, uint32_t count);
 
 uint8_t minipack_fixmap_read_count(void *ptr);
 
-void minipack_fixmap_write_header(void *ptr, uint8_t count);
+void minipack_fixmap_write_hdr(void *ptr, uint8_t count);
 
 
 //======================================
@@ -317,7 +334,7 @@ void minipack_fixmap_write_header(void *ptr, uint8_t count);
 
 uint16_t minipack_map16_read_count(void *ptr);
 
-void minipack_map16_write_header(void *ptr, uint16_t count);
+void minipack_map16_write_hdr(void *ptr, uint16_t count);
 
 
 //======================================
@@ -326,7 +343,7 @@ void minipack_map16_write_header(void *ptr, uint16_t count);
 
 uint32_t minipack_map32_read_count(void *ptr);
 
-void minipack_map32_write_header(void *ptr, uint32_t count);
+void minipack_map32_write_hdr(void *ptr, uint32_t count);
 
 
 #endif
