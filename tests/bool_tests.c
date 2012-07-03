@@ -1,6 +1,7 @@
-#include "minunit.h"
 #include <minipack.h>
+#include <msgpack.h>
 
+#include "minunit.h"
 #include "memdump.h"
 
 //==============================================================================
@@ -11,7 +12,9 @@
 
 int test_bool_read() {
     mu_assert(minipack_bool_read("\xC3") == true);
+    mu_assert_msgpack_true(1, "\xC3");
     mu_assert(minipack_bool_read("\xC2") == false);
+    mu_assert_msgpack_false(1, "\xC2");
     return 0;
 }
 

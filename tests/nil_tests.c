@@ -1,6 +1,7 @@
-#include "minunit.h"
 #include <minipack.h>
+#include <msgpack.h>
 
+#include "minunit.h"
 #include "memdump.h"
 
 //==============================================================================
@@ -13,6 +14,7 @@ int test_nil_write() {
     uint8_t data[] = {0x00};
     minipack_nil_write(data);
     mu_assert_mem(data, 1, "\xC0");
+    mu_assert_msgpack_nil(1, "\xC0");
     return 0;
 }
 
