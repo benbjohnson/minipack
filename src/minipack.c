@@ -755,6 +755,16 @@ void minipack_int64_write(void *ptr, int64_t value)
 // Nil
 //--------------------------------------
 
+// Checks if an element is a nil.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is a nil, otherwise returns false.
+bool minipack_is_nil(void *ptr)
+{
+    return (*((uint8_t*)ptr) == NIL_TYPE);
+}
+
 // Writes a nil to a given memory address.
 //
 // ptr - A pointer to where the nil should be written to.
@@ -774,6 +784,36 @@ void minipack_nil_write(void *ptr)
 // Boolean
 //--------------------------------------
 
+// Checks if an element is a bool.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is a bool, otherwise returns false.
+bool minipack_is_bool(void *ptr)
+{
+    return minipack_is_true(ptr) || minipack_is_false(ptr);
+}
+
+// Checks if an element is a bool true.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is a bool true, otherwise returns false.
+bool minipack_is_true(void *ptr)
+{
+    return (*((uint8_t*)ptr) == TRUE_TYPE);
+}
+
+// Checks if an element is a bool false.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is a bool false, otherwise returns false.
+bool minipack_is_false(void *ptr)
+{
+    return (*((uint8_t*)ptr) == FALSE_TYPE);
+}
+
 // Reads a boolean from a given memory address.
 //
 // ptr - A pointer to where the boolean should be read from.
@@ -781,7 +821,7 @@ void minipack_nil_write(void *ptr)
 // Returns a boolean value.
 bool minipack_bool_read(void *ptr)
 {
-    return (*(uint8_t*)ptr == TRUE_TYPE);
+    return minipack_is_true(ptr);
 }
 
 // Writes a boolean to a given memory address.
@@ -807,6 +847,16 @@ void minipack_bool_write(void *ptr, bool value)
 //--------------------------------------
 // Float
 //--------------------------------------
+
+// Checks if an element is a float.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is a float, otherwise returns false.
+bool minipack_is_float(void *ptr)
+{
+    return (*((uint8_t*)ptr) == FLOAT_TYPE);
+}
 
 // Reads a float from a given memory address.
 //
@@ -835,6 +885,16 @@ void minipack_float_write(void *ptr, float value)
 //--------------------------------------
 // Double
 //--------------------------------------
+
+// Checks if an element is a double.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is a double, otherwise returns false.
+bool minipack_is_double(void *ptr)
+{
+    return (*((uint8_t*)ptr) == DOUBLE_TYPE);
+}
 
 // Reads a double from a given memory address.
 //

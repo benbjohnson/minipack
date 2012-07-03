@@ -10,6 +10,12 @@
 //
 //==============================================================================
 
+int test_is_double() {
+    mu_assert(minipack_is_double("\xCB\x00\x00\x00\x00\x00\x00\x00\x00") == true);
+    mu_assert(minipack_is_double("\xCA\x00\x00\x00\x00\x00\x00\x00\x00") == false);
+    return 0;
+}
+
 int test_double_read() {
     mu_assert(minipack_double_read("\xCB\x00\x00\x00\x00\x00\x00\x00\x00") == 0);
     mu_assert_msgpack_double(0, 9, "\xCB\x00\x00\x00\x00\x00\x00\x00\x00");
@@ -48,6 +54,7 @@ int test_double_write() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_is_double);
     mu_run_test(test_double_read);
     mu_run_test(test_double_write);
     return 0;

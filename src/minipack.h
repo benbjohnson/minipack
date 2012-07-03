@@ -168,6 +168,8 @@ void minipack_int64_write(void *ptr, int64_t value);
 // Nil
 //======================================
 
+bool minipack_is_nil(void *ptr);
+
 void minipack_nil_write(void *ptr);
 
 
@@ -178,8 +180,14 @@ void minipack_nil_write(void *ptr);
 //==============================================================================
 
 //======================================
-// Nil
+// Bool
 //======================================
+
+bool minipack_is_bool(void *ptr);
+
+bool minipack_is_true(void *ptr);
+
+bool minipack_is_false(void *ptr);
 
 bool minipack_bool_read(void *ptr);
 
@@ -196,6 +204,8 @@ void minipack_bool_write(void *ptr, bool value);
 // Float
 //======================================
 
+bool minipack_is_float(void *ptr);
+
 float minipack_float_read(void *ptr);
 
 void minipack_float_write(void *ptr, float value);
@@ -204,6 +214,8 @@ void minipack_float_write(void *ptr, float value);
 //======================================
 // Double
 //======================================
+
+bool minipack_is_double(void *ptr);
 
 double minipack_double_read(void *ptr);
 

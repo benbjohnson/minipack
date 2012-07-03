@@ -10,6 +10,24 @@
 //
 //==============================================================================
 
+int test_is_bool() {
+    uint8_t data[] = {0xC2, 0xC3, 0x00};
+
+    mu_assert(minipack_is_bool(data+0) == true);
+    mu_assert(minipack_is_bool(data+1) == true);
+    mu_assert(minipack_is_bool(data+2) == false);
+
+    mu_assert(minipack_is_true(data+0) == false);
+    mu_assert(minipack_is_true(data+1) == true);
+    mu_assert(minipack_is_true(data+2) == false);
+
+    mu_assert(minipack_is_false(data+0) == true);
+    mu_assert(minipack_is_false(data+1) == false);
+    mu_assert(minipack_is_false(data+2) == false);
+
+    return 0;
+}
+
 int test_bool_read() {
     mu_assert(minipack_bool_read("\xC3") == true);
     mu_assert_msgpack_true(1, "\xC3");
@@ -38,6 +56,7 @@ int test_bool_write() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_is_bool);
     mu_run_test(test_bool_read);
     mu_run_test(test_bool_write);
     return 0;

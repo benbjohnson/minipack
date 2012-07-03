@@ -10,6 +10,13 @@
 //
 //==============================================================================
 
+int test_is_nil() {
+    uint8_t data[] = {0x00, 0xC0};
+    mu_assert(minipack_is_nil(data+0) == false);
+    mu_assert(minipack_is_nil(data+1) == true);
+    return 0;
+}
+
 int test_nil_write() {
     uint8_t data[] = {0x00};
     minipack_nil_write(data);
@@ -26,6 +33,7 @@ int test_nil_write() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_is_nil);
     mu_run_test(test_nil_write);
     return 0;
 }
