@@ -1,6 +1,7 @@
-#include "minunit.h"
 #include <minipack.h>
+#include <msgpack.h>
 
+#include "minunit.h"
 #include "memdump.h"
 
 //==============================================================================
@@ -21,12 +22,15 @@ int test_fixarray_write_header() {
 
     minipack_fixarray_write_header(data, 0);
     mu_assert_mem(data, 1, "\x90");
+    mu_assert_msgpack_array(0, 1, "\x90");
 
     minipack_fixarray_write_header(data, 5);
     mu_assert_mem(data, 1, "\x95");
+    mu_assert_msgpack_array(5, 1, "\x95");
 
     minipack_fixarray_write_header(data, 15);
     mu_assert_mem(data, 1, "\x9F");
+    mu_assert_msgpack_array(15, 1, "\x9F");
 
     return 0;
 }
