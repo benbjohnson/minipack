@@ -1,4 +1,4 @@
-// minipack v0.1.0
+// minipack v0.1.1
 
 #ifndef _minipack_h
 #define _minipack_h
