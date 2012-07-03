@@ -122,3 +122,16 @@ int tests_run;
 
 #define mu_assert_msgpack_array(COUNT, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_array, COUNT, LENGTH, BYTES)
 #define mu_assert_msgpack_map(COUNT, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_map, COUNT, LENGTH, BYTES)
+
+#define mu_assert_msgpack_raw_hdr(COUNT, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_raw, COUNT, LENGTH, BYTES)
+#define mu_assert_msgpack_raw(COUNT, DATA, LENGTH, BYTES) do {\
+    char *chars = (char*)DATA; \
+    msgpack_sbuffer* buffer = msgpack_sbuffer_new(); \
+    msgpack_packer* packer = msgpack_packer_new(buffer, msgpack_sbuffer_write); \
+    msgpack_pack_raw(packer, COUNT); \
+    msgpack_pack_raw_body(packer, (void*)chars, COUNT); \
+    mu_assert_with_msg(buffer->size == LENGTH, "; Actual: %ld", buffer->size); \
+    mu_assert_mem(buffer->data, LENGTH, BYTES); \
+    msgpack_sbuffer_free(buffer); \
+    msgpack_packer_free(packer); \
+} while(0)

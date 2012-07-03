@@ -1,6 +1,7 @@
-#include "minunit.h"
 #include <minipack.h>
+#include <msgpack.h>
 
+#include "minunit.h"
 #include "memdump.h"
 
 //==============================================================================
@@ -13,6 +14,7 @@ int test_raw16_read_length() {
     mu_assert(minipack_raw16_read_length("\xDA\x00\x00") == 0);
     mu_assert(minipack_raw16_read_length("\xDA\x00\x05") == 5);
     mu_assert(minipack_raw16_read_length("\xDA\x01\x00") == 256);
+    mu_assert_msgpack_raw_hdr(256, 3, "\xDA\x01\x00");
     return 0;
 }
 

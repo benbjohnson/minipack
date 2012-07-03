@@ -1,6 +1,7 @@
-#include "minunit.h"
 #include <minipack.h>
+#include <msgpack.h>
 
+#include "minunit.h"
 #include "memdump.h"
 
 //==============================================================================
@@ -11,8 +12,11 @@
 
 int test_fixraw_read_length() {
     mu_assert(minipack_fixraw_read_length("\xA0") == 0);
+    mu_assert_msgpack_raw(0, NULL, 1, "\xA0");
     mu_assert(minipack_fixraw_read_length("\xA5") == 5);
+    mu_assert_msgpack_raw(5, "abcde", 6, "\xA5" "abcde");
     mu_assert(minipack_fixraw_read_length("\xBF") == 31);
+    mu_assert_msgpack_raw(31, "1234567890123456789012345678901", 32, "\xBF" "1234567890123456789012345678901");
     return 0;
 }
 

@@ -1,6 +1,7 @@
-#include "minunit.h"
 #include <minipack.h>
+#include <msgpack.h>
 
+#include "minunit.h"
 #include "memdump.h"
 
 //==============================================================================
@@ -13,6 +14,7 @@ int test_raw32_read_length() {
     mu_assert(minipack_raw32_read_length("\xDB\x00\x00\x00\x00") == 0);
     mu_assert(minipack_raw32_read_length("\xDB\x00\x00\x00\x05") == 5);
     mu_assert(minipack_raw32_read_length("\xDB\x01\x00\x00\x00") == 16777216);
+    mu_assert_msgpack_raw_hdr(16777216, 5, "\xDB\x01\x00\x00\x00");
     return 0;
 }
 
