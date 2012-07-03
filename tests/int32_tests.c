@@ -1,6 +1,7 @@
-#include "minunit.h"
 #include <minipack.h>
+#include <msgpack.h>
 
+#include "minunit.h"
 #include "memdump.h"
 
 //==============================================================================
@@ -15,6 +16,7 @@ int test_int32_read() {
     mu_assert(minipack_int32_read("\xD2\x00\x00\x03\xE8") == 1000);
     mu_assert(minipack_int32_read("\xD2\x7F\xFF\xFF\xFF") == 2147483647);
     mu_assert(minipack_int32_read("\xD2\x80\x00\x00\x00") == -2147483648);
+    mu_assert_msgpack_int32(-2147483648, 5, "\xD2\x80\x00\x00\x00");
     return 0;
 }
 

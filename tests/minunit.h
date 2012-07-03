@@ -86,6 +86,7 @@ int tests_run;
     msgpack_sbuffer* buffer = msgpack_sbuffer_new(); \
     msgpack_packer* packer = msgpack_packer_new(buffer, msgpack_sbuffer_write); \
     FUNC(packer, VALUE); \
+    memdump(buffer->data, buffer->size); \
     mu_assert_with_msg(buffer->size == LENGTH, "; Actual: %ld", buffer->size); \
     mu_assert_mem(buffer->data, LENGTH, BYTES); \
     msgpack_sbuffer_free(buffer); \
