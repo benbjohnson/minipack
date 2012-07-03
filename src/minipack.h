@@ -233,6 +233,8 @@ void minipack_double_write(void *ptr, double value);
 // General
 //======================================
 
+bool minipack_is_raw(void *ptr);
+
 size_t minipack_raw_hdr_sizeof(uint32_t length);
 
 uint32_t minipack_raw_read_hdr(void *ptr, size_t *hdrsz);
@@ -284,6 +286,8 @@ void minipack_raw32_write(void *ptr, uint32_t length, void *bytes);
 // General
 //======================================
 
+bool minipack_is_array(void *ptr);
+
 size_t minipack_array_hdr_sizeof(uint32_t count);
 
 uint32_t minipack_array_read_hdr(void *ptr, size_t *hdrsz);
@@ -334,6 +338,8 @@ void minipack_array32_write_hdr(void *ptr, uint32_t count);
 //======================================
 // General
 //======================================
+
+bool minipack_is_map(void *ptr);
 
 size_t minipack_map_hdr_sizeof(uint32_t count);
 

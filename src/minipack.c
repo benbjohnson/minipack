@@ -931,6 +931,16 @@ void minipack_double_write(void *ptr, double value)
 // Raw bytes
 //--------------------------------------
 
+// Checks if an element is raw bytes.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is raw bytes, otherwise returns false.
+bool minipack_is_raw(void *ptr)
+{
+    return minipack_is_fixraw(ptr) || minipack_is_raw16(ptr) || minipack_is_raw32(ptr);
+}
+
 // Retrieves the size, in bytes, of how large an element header will be.
 //
 // length - The length of the raw bytes.
@@ -1124,8 +1134,18 @@ void minipack_raw32_write(void *ptr, uint32_t length, void *bytes)
 //==============================================================================
 
 //--------------------------------------
-// Array
+// General
 //--------------------------------------
+
+// Checks if an element is an array.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is an array, otherwise returns false.
+bool minipack_is_array(void *ptr)
+{
+    return minipack_is_fixarray(ptr) || minipack_is_array16(ptr) || minipack_is_array32(ptr);
+}
 
 // Retrieves the size, in bytes, of how large an element header will be.
 //
@@ -1309,8 +1329,18 @@ void minipack_array32_write_hdr(void *ptr, uint32_t count)
 //==============================================================================
 
 //--------------------------------------
-// Map
+// General
 //--------------------------------------
+
+// Checks if an element is a map.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is a map, otherwise returns false.
+bool minipack_is_map(void *ptr)
+{
+    return minipack_is_fixmap(ptr) || minipack_is_map16(ptr) || minipack_is_map32(ptr);
+}
 
 // Retrieves the size, in bytes, of how large an element header will be.
 //

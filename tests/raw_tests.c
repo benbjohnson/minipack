@@ -18,6 +18,18 @@ void init_ptr(void **ptr, uint32_t sz, uint32_t byte)
     memset(*ptr, sz, byte);
 }
 
+int test_is_raw() {
+    mu_assert(minipack_is_raw("\xA0") == true);
+    mu_assert(minipack_is_raw("\xBF") == true);
+    mu_assert(minipack_is_raw("\xBF") == true);
+    mu_assert(minipack_is_raw("\xDA\x00\x90") == true);
+    mu_assert(minipack_is_raw("\xDB\x00\x90") == true);
+
+    mu_assert(minipack_is_raw("\x00") == false);
+    mu_assert(minipack_is_raw("\xF0") == false);
+    return 0;
+}
+
 int test_raw_hdr_sizeof() {
     // Fix raw
     mu_assert(minipack_raw_hdr_sizeof(0) == 1);
@@ -107,6 +119,7 @@ int test_raw_write() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_is_raw);
     mu_run_test(test_raw_hdr_sizeof);
     mu_run_test(test_raw_read_hdr);
     mu_run_test(test_raw_write);

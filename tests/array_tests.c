@@ -10,6 +10,17 @@
 //
 //==============================================================================
 
+int test_is_array() {
+    mu_assert(minipack_is_array("\x90") == true);
+    mu_assert(minipack_is_array("\x9F") == true);
+    mu_assert(minipack_is_array("\xDC\x00\x00") == true);
+    mu_assert(minipack_is_array("\xDD\x00\x00\x00\x00") == true);
+
+    mu_assert(minipack_is_array("\x00") == false);
+    mu_assert(minipack_is_array("\xF0") == false);
+    return 0;
+}
+
 int test_array_read_count() {
     size_t sz;
     
@@ -73,6 +84,7 @@ int test_array_write_hdr() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_is_array);
     mu_run_test(test_array_read_count);
     mu_run_test(test_array_write_hdr);
     return 0;

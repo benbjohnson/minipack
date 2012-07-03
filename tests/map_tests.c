@@ -10,6 +10,17 @@
 //
 //==============================================================================
 
+int test_is_map() {
+    mu_assert(minipack_is_map("\x80") == true);
+    mu_assert(minipack_is_map("\x8F") == true);
+    mu_assert(minipack_is_map("\xDE\x00\x00") == true);
+    mu_assert(minipack_is_map("\xDF\x00\x00\x00\x00") == true);
+
+    mu_assert(minipack_is_map("\x00") == false);
+    mu_assert(minipack_is_map("\xF0") == false);
+    return 0;
+}
+
 int test_map_read_count() {
     size_t sz;
     
@@ -73,6 +84,7 @@ int test_map_write_hdr() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_is_map);
     mu_run_test(test_map_read_count);
     mu_run_test(test_map_write_hdr);
     return 0;
