@@ -99,12 +99,15 @@
 #define FIXRAW_TYPE_MASK        0xE0
 #define FIXRAW_VALUE_MASK       0x1F
 #define FIXRAW_HDRSIZE          1
+#define FIXRAW_MAXSIZE          31
 
 #define RAW16_TYPE              0xDA
 #define RAW16_HDRSIZE           3
+#define RAW16_MAXSIZE           65535
 
 #define RAW32_TYPE              0xDB
 #define RAW32_HDRSIZE           5
+#define RAW32_MAXSIZE           4294967295
 
 
 //--------------------------------------
@@ -859,8 +862,94 @@ void minipack_double_write(void *ptr, double value)
 //==============================================================================
 
 //--------------------------------------
+// Raw bytes
+//--------------------------------------
+
+// Retrieves the size, in bytes, of how large an element header will be.
+//
+// length - The length of the raw bytes.
+//
+// Returns the number of bytes needed for the header.
+size_t minipack_raw_hdr_sizeof(uint32_t length)
+{
+    if(length <= FIXRAW_MAXSIZE) {
+        return FIXRAW_HDRSIZE;
+    }
+    else if(length <= RAW16_MAXSIZE) {
+        return RAW16_HDRSIZE;
+    }
+    else if(length <= RAW32_MAXSIZE) {
+        return RAW32_HDRSIZE;
+    }
+
+    return 0;
+}
+
+// Reads the header for raw bytes from a given memory address.
+//
+// ptr   - A pointer to where the unsigned int should be read from.
+// hdrsz - A pointer to where the size of the header will be returned to.
+//
+// Returns the number of bytes in the raw bytes.
+uint32_t minipack_raw_read_hdr(void *ptr, size_t *hdrsz)
+{
+    if(minipack_is_fixraw(ptr)) {
+        *hdrsz = FIXRAW_HDRSIZE;
+        return (uint32_t)minipack_fixraw_read_length(ptr);
+    }
+    else if(minipack_is_raw16(ptr)) {
+        *hdrsz = RAW16_HDRSIZE;
+        return (uint32_t)minipack_raw16_read_length(ptr);
+    }
+    else if(minipack_is_raw32(ptr)) {
+        *hdrsz = RAW32_HDRSIZE;
+        return minipack_raw32_read_length(ptr);
+    }
+    else {
+        *hdrsz = 0;
+        return 0;
+    }
+}
+
+// Writes raw bytes to a given memory address.
+//
+// ptr    - A pointer to where the integer should be written to.
+// length - The number of bytes to write.
+// bytes  - A pointer to the raw bytes to be written.
+// sz     - A pointer to where the total size of the element will be returned.
+void minipack_raw_write(void *ptr, uint32_t length, void *bytes, size_t *sz)
+{
+    if(length <= FIXRAW_MAXSIZE) {
+        *sz = FIXRAW_HDRSIZE + length;
+        minipack_fixraw_write(ptr, (uint8_t)length, bytes);
+    }
+    else if(length <= RAW16_MAXSIZE) {
+        *sz = RAW16_HDRSIZE + length;
+        minipack_raw16_write(ptr, (uint16_t)length, bytes);
+    }
+    else if(length <= RAW32_MAXSIZE) {
+        *sz = RAW32_HDRSIZE + length;
+        minipack_raw32_write(ptr, length, bytes);
+    }
+    else {
+        *sz = 0;
+    }
+}
+
+
+//--------------------------------------
 // Fix raw
 //--------------------------------------
+
+// Checks if an element is a fixraw type.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is a fixraw, otherwise returns false.
+bool minipack_is_fixraw(void *ptr)
+{
+    return (*((uint8_t*)ptr) & FIXRAW_TYPE_MASK) == FIXRAW_TYPE;
+}
 
 // Reads the number of bytes in a fix raw from a given memory address.
 //
@@ -889,6 +978,16 @@ void minipack_fixraw_write(void *ptr, uint8_t length, void *bytes)
 // Raw 16
 //--------------------------------------
 
+// Checks if an element is a raw16 type.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is a raw 16, otherwise returns false.
+bool minipack_is_raw16(void *ptr)
+{
+    return (*((uint8_t*)ptr) == RAW16_TYPE);
+}
+
 // Reads the number of bytes in a raw 16 from a given memory address.
 //
 // ptr - A pointer to where the raw 16 should be read from.
@@ -916,6 +1015,16 @@ void minipack_raw16_write(void *ptr, uint16_t length, void *bytes)
 //--------------------------------------
 // Raw 32
 //--------------------------------------
+
+// Checks if an element is a raw32 type.
+//
+// ptr - A pointer to the element.
+//
+// Returns true if the element is a raw 32, otherwise returns false.
+bool minipack_is_raw32(void *ptr)
+{
+    return (*((uint8_t*)ptr) == RAW32_TYPE);
+}
 
 // Reads the number of bytes in a raw 32 from a given memory address.
 //

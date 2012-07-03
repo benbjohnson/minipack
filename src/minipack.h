@@ -218,8 +218,21 @@ void minipack_double_write(void *ptr, double value);
 //==============================================================================
 
 //======================================
+// General
+//======================================
+
+size_t minipack_raw_hdr_sizeof(uint32_t length);
+
+uint32_t minipack_raw_read_hdr(void *ptr, size_t *hdrsz);
+
+void minipack_raw_write(void *ptr, uint32_t length, void *bytes, size_t *sz);
+
+
+//======================================
 // Fix raw
 //======================================
+
+bool minipack_is_fixraw(void *ptr);
 
 uint8_t minipack_fixraw_read_length(void *ptr);
 
@@ -230,6 +243,8 @@ void minipack_fixraw_write(void *ptr, uint8_t length, void *bytes);
 // Raw 16
 //======================================
 
+bool minipack_is_raw16(void *ptr);
+
 uint16_t minipack_raw16_read_length(void *ptr);
 
 void minipack_raw16_write(void *ptr, uint16_t length, void *bytes);
@@ -238,6 +253,8 @@ void minipack_raw16_write(void *ptr, uint16_t length, void *bytes);
 //======================================
 // Raw 32
 //======================================
+
+bool minipack_is_raw32(void *ptr);
 
 uint32_t minipack_raw32_read_length(void *ptr);
 

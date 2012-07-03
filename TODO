@@ -1,0 +1,8 @@
+- Add generic array read/write.
+- Add generic map read/write.
+
+- Add type checks for:
+  - float
+  - double
+  - bool, true, false
+  - nil
