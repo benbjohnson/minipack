@@ -19,9 +19,9 @@ int test_int_read() {
     mu_assert(sz == 1);
 
     // Negative Fixnum
-    mu_assert(minipack_int_read("\xE0", &sz) == -1);
+    mu_assert(minipack_int_read("\xFF", &sz) == -1);
     mu_assert(sz == 1);
-    mu_assert(minipack_int_read("\xFF", &sz) == -32);
+    mu_assert(minipack_int_read("\xE0", &sz) == -32);
     mu_assert(sz == 1);
 
     // 8-bit

@@ -1,3 +1,5 @@
+- integrate tests with original msgpack library.
+
 - Add generic array read/write.
 - Add generic map read/write.
 

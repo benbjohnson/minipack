@@ -246,8 +246,8 @@ bool minipack_is_neg_fixnum(void *ptr)
 // Returns a signed 8-bit integer value for the fixnum.
 int8_t minipack_neg_fixnum_read(void *ptr)
 {
-    int8_t value = *((int8_t*)ptr);
-    return ((value & NEG_FIXNUM_VALUE_MASK) + 1) * -1;
+    int8_t value = *((int8_t*)ptr) & NEG_FIXNUM_VALUE_MASK;
+    return (32-value) * -1;
 }
 
 // Writes a negative fixnum from a given memory address.
@@ -255,7 +255,7 @@ int8_t minipack_neg_fixnum_read(void *ptr)
 // ptr - A pointer to where the fixnum should be written to.
 void minipack_neg_fixnum_write(void *ptr, int8_t value)
 {
-    *((int8_t*)ptr) = (((value * -1) - 1) & NEG_FIXNUM_VALUE_MASK) | NEG_FIXNUM_TYPE;
+    *((int8_t*)ptr) = (32 + value) | NEG_FIXNUM_TYPE;
 }
 
 

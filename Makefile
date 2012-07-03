@@ -2,7 +2,7 @@
 # Variables
 ################################################################################
 
-CFLAGS=-g -Wall -Wextra -std=c99 -D_FILE_OFFSET_BITS=64
+CFLAGS=-g -Wall -Wextra -std=c99 -D_FILE_OFFSET_BITS=64 -lmsgpack
 
 SOURCES=src/minipack.c
 OBJECTS=bin/minipack.o

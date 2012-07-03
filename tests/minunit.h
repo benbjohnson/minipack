@@ -50,12 +50,12 @@ int tests_run;
 
 //==============================================================================
 //
-// Minunit
+// Memory
 //
 //==============================================================================
 
 #define mu_assert_mem(PTR, COUNT, BYTES) do {\
-    char *chars = BYTES; \
+    char *chars = (char*)BYTES; \
     uint8_t *bytes = (uint8_t*)chars; \
     int i; \
     for(i=0; i<COUNT; i++) { \
@@ -64,3 +64,60 @@ int tests_run;
         } \
     } \
 } while(0)
+
+
+//==============================================================================
+//
+// Msgpakc
+//
+//==============================================================================
+
+#define mu_assert_msgpack0(FUNC, LENGTH, BYTES) do {\
+    msgpack_sbuffer* buffer = msgpack_sbuffer_new(); \
+    msgpack_packer* packer = msgpack_packer_new(buffer, msgpack_sbuffer_write); \
+    FUNC(packer); \
+    mu_assert_with_msg(buffer->size == LENGTH, "; Actual: %ld", buffer->size); \
+    mu_assert_mem(buffer->data, LENGTH, BYTES); \
+    msgpack_sbuffer_free(buffer); \
+    msgpack_packer_free(packer); \
+} while(0)
+
+#define mu_assert_msgpack1(FUNC, VALUE, LENGTH, BYTES) do {\
+    msgpack_sbuffer* buffer = msgpack_sbuffer_new(); \
+    msgpack_packer* packer = msgpack_packer_new(buffer, msgpack_sbuffer_write); \
+    FUNC(packer, VALUE); \
+    mu_assert_with_msg(buffer->size == LENGTH, "; Actual: %ld", buffer->size); \
+    mu_assert_mem(buffer->data, LENGTH, BYTES); \
+    msgpack_sbuffer_free(buffer); \
+    msgpack_packer_free(packer); \
+} while(0)
+
+#define mu_assert_msgpack2(FUNC, VALUE1, VALUE2, LENGTH, BYTES) do {\
+    msgpack_sbuffer* buffer = msgpack_sbuffer_new(); \
+    msgpack_packer* packer = msgpack_packer_new(buffer, msgpack_sbuffer_write); \
+    FUNC(packer, VALUE1, VALUE2); \
+    mu_assert_with_msg(buffer->size == LENGTH, "; Actual: %ld", buffer->size); \
+    mu_assert_mem(buffer->data, LENGTH, BYTES); \
+    msgpack_sbuffer_free(buffer); \
+    msgpack_packer_free(packer); \
+} while(0)
+
+#define mu_assert_msgpack_uint8(VALUE, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_uint8, VALUE, LENGTH, BYTES)
+#define mu_assert_msgpack_uint16(VALUE, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_uint16, VALUE, LENGTH, BYTES)
+#define mu_assert_msgpack_uint32(VALUE, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_uint32, VALUE, LENGTH, BYTES)
+#define mu_assert_msgpack_uint64(VALUE, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_uint64, VALUE, LENGTH, BYTES)
+
+#define mu_assert_msgpack_int8(VALUE, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_int8, VALUE, LENGTH, BYTES)
+#define mu_assert_msgpack_int16(VALUE, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_int16, VALUE, LENGTH, BYTES)
+#define mu_assert_msgpack_int32(VALUE, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_int32, VALUE, LENGTH, BYTES)
+#define mu_assert_msgpack_int64(VALUE, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_int64, VALUE, LENGTH, BYTES)
+
+#define mu_assert_msgpack_float(VALUE, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_float, VALUE, LENGTH, BYTES)
+#define mu_assert_msgpack_double(VALUE, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_double, VALUE, LENGTH, BYTES)
+
+#define mu_assert_msgpack_nil(LENGTH, BYTES) mu_assert_msgpack0(msgpack_pack_nil, LENGTH, BYTES)
+#define mu_assert_msgpack_true(LENGTH, BYTES) mu_assert_msgpack0(msgpack_pack_true, LENGTH, BYTES)
+#define mu_assert_msgpack_false(LENGTH, BYTES) mu_assert_msgpack0(msgpack_pack_false, LENGTH, BYTES)
+
+#define mu_assert_msgpack_array(COUNT, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_array, COUNT, LENGTH, BYTES)
+#define mu_assert_msgpack_map(COUNT, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_map, COUNT, LENGTH, BYTES)
