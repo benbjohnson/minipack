@@ -2,7 +2,6 @@
 
 #include "minipack.h"
 #include "string.h"
-#include "../tests/memdump.h"
 
 //==============================================================================
 //
