@@ -10,7 +10,7 @@
 //
 //==============================================================================
 
-int test_int32_read() {
+int test_unpack_int32() {
     size_t sz;
     mu_assert(minipack_unpack_int32("\xD2\x00\x00\x00\x00", &sz) == 0);
     mu_assert(sz == 5);
@@ -26,7 +26,7 @@ int test_int32_read() {
     return 0;
 }
 
-int test_int32_write() {
+int test_pack_int32() {
     size_t sz;
     uint8_t data[] = {0x00, 0x00, 0x00, 0x00, 0x00};
 
@@ -61,8 +61,8 @@ int test_int32_write() {
 //==============================================================================
 
 int all_tests() {
-    mu_run_test(test_int32_read);
-    mu_run_test(test_int32_write);
+    mu_run_test(test_unpack_int32);
+    mu_run_test(test_pack_int32);
     return 0;
 }
 

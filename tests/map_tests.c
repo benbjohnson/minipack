@@ -21,7 +21,7 @@ int test_is_map() {
     return 0;
 }
 
-int test_map_read() {
+int test_unpack_map() {
     size_t sz;
     
     // Fixmap
@@ -45,7 +45,7 @@ int test_map_read() {
     return 0;
 }
 
-int test_map_write() {
+int test_pack_map() {
     size_t sz;
     uint8_t data[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
@@ -85,8 +85,8 @@ int test_map_write() {
 
 int all_tests() {
     mu_run_test(test_is_map);
-    mu_run_test(test_map_read);
-    mu_run_test(test_map_write);
+    mu_run_test(test_unpack_map);
+    mu_run_test(test_pack_map);
     return 0;
 }
 

@@ -9,7 +9,7 @@
 //
 //==============================================================================
 
-int test_uint_read() {
+int test_unpack_uint() {
     size_t sz;
 
     // Fixnum
@@ -43,7 +43,7 @@ int test_uint_read() {
     return 0;
 }
 
-int test_uint_write() {
+int test_pack_uint() {
     size_t sz;
     uint8_t data[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     
@@ -95,8 +95,8 @@ int test_uint_write() {
 //==============================================================================
 
 int all_tests() {
-    mu_run_test(test_uint_read);
-    mu_run_test(test_uint_write);
+    mu_run_test(test_unpack_uint);
+    mu_run_test(test_pack_uint);
     return 0;
 }
 

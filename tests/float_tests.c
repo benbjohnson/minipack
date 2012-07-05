@@ -16,33 +16,48 @@ int test_is_float() {
     return 0;
 }
 
-int test_float_read() {
-    mu_assert(minipack_unpack_float("\xCA\x00\x00\x00\x00") == 0);
+int test_unpack_float() {
+    size_t sz;
+
+    mu_assert(minipack_unpack_float("\xCA\x00\x00\x00\x00", &sz) == 0);
     mu_assert_msgpack_float(0, 5, "\xCA\x00\x00\x00\x00");
-    mu_assert(minipack_unpack_float("\xCA\x42\xC8\x00\x00") == 100);
+    mu_assert(sz == 5);
+
+    mu_assert(minipack_unpack_float("\xCA\x42\xC8\x00\x00", &sz) == 100);
     mu_assert_msgpack_float(100, 5, "\xCA\x42\xC8\x00\x00");
-    mu_assert(minipack_unpack_float("\xCA\xC2\xC8\x00\x00") == -100);
+    mu_assert(sz == 5);
+
+    mu_assert(minipack_unpack_float("\xCA\xC2\xC8\x00\x00", &sz) == -100);
     mu_assert_msgpack_float(-100, 5, "\xCA\xC2\xC8\x00\x00");
-    float value = minipack_unpack_float("\xCA\x42\xC8\x66\x66");      // = 100.2
+    mu_assert(sz == 5);
+
+    float value = minipack_unpack_float("\xCA\x42\xC8\x66\x66", &sz);      //= 100.2
     mu_assert_mem(&value, 4, "\x66\x66\xC8\x42");
     mu_assert_msgpack_float(100.2, 5, "\xCA\x42\xC8\x66\x66");
+    mu_assert(sz == 5);
+
     return 0;
 }
 
-int test_float_write() {
+int test_pack_float() {
+    size_t sz;
     uint8_t data[] = {0x00, 0x00, 0x00, 0x00, 0x00};
 
-    minipack_pack_float(data, 0);
+    minipack_pack_float(data, 0, &sz);
     mu_assert_mem(data, 5, "\xCA\x00\x00\x00\x00");
+    mu_assert(sz == 5);
 
-    minipack_pack_float(data, 100);
+    minipack_pack_float(data, 100, &sz);
     mu_assert_mem(data, 5, "\xCA\x42\xC8\x00\x00");
+    mu_assert(sz == 5);
 
-    minipack_pack_float(data, -100);
+    minipack_pack_float(data, -100, &sz);
     mu_assert_mem(data, 5, "\xCA\xC2\xC8\x00\x00");
+    mu_assert(sz == 5);
 
-    minipack_pack_float(data, 100.2);
+    minipack_pack_float(data, 100.2, &sz);
     mu_assert_mem(data, 5, "\xCA\x42\xC8\x66\x66");
+    mu_assert(sz == 5);
 
     return 0;
 }
@@ -55,8 +70,8 @@ int test_float_write() {
 
 int all_tests() {
     mu_run_test(test_is_float);
-    mu_run_test(test_float_read);
-    mu_run_test(test_float_write);
+    mu_run_test(test_unpack_float);
+    mu_run_test(test_pack_float);
     return 0;
 }
 

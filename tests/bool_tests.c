@@ -28,22 +28,34 @@ int test_is_bool() {
     return 0;
 }
 
-int test_bool_read() {
-    mu_assert(minipack_unpack_bool("\xC3") == true);
+int test_unpack_bool() {
+    size_t sz;
+    
+    mu_assert(minipack_unpack_bool("\xC3", &sz) == true);
     mu_assert_msgpack_true(1, "\xC3");
-    mu_assert(minipack_unpack_bool("\xC2") == false);
+    mu_assert(sz == 1);
+    
+    mu_assert(minipack_unpack_bool("\xC2", &sz) == false);
     mu_assert_msgpack_false(1, "\xC2");
+    mu_assert(sz == 1);
+    
+    mu_assert(minipack_unpack_bool("\x00", &sz) == false);
+    mu_assert(sz == 0);
+    
     return 0;
 }
 
-int test_bool_write() {
+int test_pack_bool() {
+    size_t sz;
     uint8_t data[] = {0x00};
 
-    minipack_pack_bool(data, true);
+    minipack_pack_bool(data, true, &sz);
     mu_assert_mem(data, 1, "\xC3");
+    mu_assert(sz == 1);
 
-    minipack_pack_bool(data, false);
+    minipack_pack_bool(data, false, &sz);
     mu_assert_mem(data, 1, "\xC2");
+    mu_assert(sz == 1);
 
     return 0;
 }
@@ -57,8 +69,8 @@ int test_bool_write() {
 
 int all_tests() {
     mu_run_test(test_is_bool);
-    mu_run_test(test_bool_read);
-    mu_run_test(test_bool_write);
+    mu_run_test(test_unpack_bool);
+    mu_run_test(test_pack_bool);
     return 0;
 }
 

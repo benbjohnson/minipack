@@ -21,7 +21,7 @@ int test_is_array() {
     return 0;
 }
 
-int test_array_read() {
+int test_unpack_array() {
     size_t sz;
     
     // Fixarray
@@ -45,7 +45,7 @@ int test_array_read() {
     return 0;
 }
 
-int test_array_write() {
+int test_pack_array() {
     size_t sz;
     uint8_t data[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
@@ -85,8 +85,8 @@ int test_array_write() {
 
 int all_tests() {
     mu_run_test(test_is_array);
-    mu_run_test(test_array_read);
-    mu_run_test(test_array_write);
+    mu_run_test(test_unpack_array);
+    mu_run_test(test_pack_array);
     return 0;
 }
 

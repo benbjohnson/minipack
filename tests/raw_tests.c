@@ -46,7 +46,7 @@ int test_raw_sizeof() {
     return 0;
 }
 
-int test_raw_read() {
+int test_unpack_raw() {
     size_t sz;
 
     // Fix raw
@@ -70,44 +70,33 @@ int test_raw_read() {
     return 0;
 }
 
-int test_raw_write() {
+int test_pack_raw() {
     size_t sz;
-    void *ptr = NULL, *bytes = NULL;
+    uint8_t data[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     
     // Fix raw
-    init_ptr(&ptr, 1, 0);
-    minipack_pack_raw(ptr, 0, NULL, &sz);
-    mu_assert_mem(ptr, 1, "\xA0");
+    minipack_pack_raw(data, 0, &sz);
+    mu_assert_mem(data, 1, "\xA0");
     mu_assert(sz == 1);
 
-    init_ptr(&ptr, 32, 0);
-    minipack_pack_raw(ptr, 31, "1234567890123456789012345678901", &sz);
-    mu_assert_mem(ptr, 1, "\xBF" "1234567890123456789012345678901");
-    mu_assert(sz == 32);
+    minipack_pack_raw(data, 31, &sz);
+    mu_assert_mem(data, 1, "\xBF");
+    mu_assert(sz == 1);
 
     // raw16
-    init_ptr(&ptr, 35, 0);
-    minipack_pack_raw(ptr, 32, "12345678901234567890123456789012", &sz);
-    mu_assert_mem(ptr, 3, "\xDA\x00\x20" "12345678901234567890123456789012");
-    mu_assert(sz == 35);
+    minipack_pack_raw(data, 32, &sz);
+    mu_assert_mem(data, 3, "\xDA\x00\x20");
+    mu_assert(sz == 3);
 
-    init_ptr(&ptr, 65538, 0);
-    init_ptr(&bytes, 65535, 1);
-    minipack_pack_raw(ptr, 65535, bytes, &sz);
-    mu_assert_mem(ptr, 3, "\xDA\xFF\xFF");
-    mu_assert_mem(ptr+3, 65535, bytes);
-    mu_assert(sz == 65538);
+    minipack_pack_raw(data, 65535, &sz);
+    mu_assert_mem(data, 3, "\xDA\xFF\xFF");
+    mu_assert(sz == 3);
 
     // raw32
-    init_ptr(&ptr, 65541, 0);
-    init_ptr(&bytes, 65536, 2);
-    minipack_pack_raw(ptr, 65536, bytes, &sz);
-    mu_assert_mem(ptr, 3, "\xDB\x00\x01\x00\x00");
-    mu_assert_mem(ptr+3, 65536, bytes);
-    mu_assert(sz == 65541);
+    minipack_pack_raw(data, 65536, &sz);
+    mu_assert_mem(data, 5, "\xDB\x00\x01\x00\x00");
+    mu_assert(sz == 5);
 
-    free(ptr);
-    free(bytes);
     return 0;
 }
 
@@ -121,8 +110,8 @@ int test_raw_write() {
 int all_tests() {
     mu_run_test(test_is_raw);
     mu_run_test(test_raw_sizeof);
-    mu_run_test(test_raw_read);
-    mu_run_test(test_raw_write);
+    mu_run_test(test_unpack_raw);
+    mu_run_test(test_pack_raw);
     return 0;
 }
 

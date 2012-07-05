@@ -9,7 +9,7 @@
 //
 //==============================================================================
 
-int test_int_read() {
+int test_unpack_int() {
     size_t sz;
 
     // Positive Fixnum
@@ -53,7 +53,7 @@ int test_int_read() {
     return 0;
 }
 
-int test_int_write() {
+int test_pack_int() {
     size_t sz;
     int8_t data[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
     
@@ -113,8 +113,8 @@ int test_int_write() {
 //==============================================================================
 
 int all_tests() {
-    mu_run_test(test_int_read);
-    mu_run_test(test_int_write);
+    mu_run_test(test_unpack_int);
+    mu_run_test(test_pack_int);
     return 0;
 }
 

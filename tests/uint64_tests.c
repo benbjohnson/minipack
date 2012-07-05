@@ -10,7 +10,7 @@
 //
 //==============================================================================
 
-int test_uint64_read() {
+int test_unpack_uint64() {
     size_t sz;
     mu_assert(minipack_unpack_uint64("\xCF\x00\x00\x00\x00\x00\x00\x00\x00", &sz) == 0);
     mu_assert(sz == 9);
@@ -24,7 +24,7 @@ int test_uint64_read() {
     return 0;
 }
 
-int test_uint64_write() {
+int test_pack_uint64() {
     size_t sz;
     uint8_t data[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
@@ -56,8 +56,8 @@ int test_uint64_write() {
 //==============================================================================
 
 int all_tests() {
-    mu_run_test(test_uint64_read);
-    mu_run_test(test_uint64_write);
+    mu_run_test(test_unpack_uint64);
+    mu_run_test(test_pack_uint64);
     return 0;
 }
 

@@ -10,7 +10,7 @@
 //
 //==============================================================================
 
-int test_uint16_read() {
+int test_unpack_uint16() {
     size_t sz;
     mu_assert(minipack_unpack_uint16("\xCD\x00\x00", &sz) == 0);
     mu_assert(sz == 3);
@@ -27,7 +27,7 @@ int test_uint16_read() {
     return 0;
 }
 
-int test_uint16_write() {
+int test_pack_uint16() {
     size_t sz;
     uint8_t data[] = {0x00, 0x00, 0x00};
 
@@ -63,8 +63,8 @@ int test_uint16_write() {
 //==============================================================================
 
 int all_tests() {
-    mu_run_test(test_uint16_read);
-    mu_run_test(test_uint16_write);
+    mu_run_test(test_unpack_uint16);
+    mu_run_test(test_pack_uint16);
     return 0;
 }
 

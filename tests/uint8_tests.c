@@ -10,7 +10,7 @@
 //
 //==============================================================================
 
-int test_uint8_read() {
+int test_unpack_uint8() {
     size_t sz;
     mu_assert(minipack_unpack_uint8("\xCC\x00", &sz) == 0);
     mu_assert(sz == 2);
@@ -27,7 +27,7 @@ int test_uint8_read() {
     return 0;
 }
 
-int test_uint8_write() {
+int test_pack_uint8() {
     size_t sz;
     uint8_t data[] = {0x00, 0x00};
 
@@ -63,8 +63,8 @@ int test_uint8_write() {
 //==============================================================================
 
 int all_tests() {
-    mu_run_test(test_uint8_read);
-    mu_run_test(test_uint8_write);
+    mu_run_test(test_unpack_uint8);
+    mu_run_test(test_pack_uint8);
     return 0;
 }
 
