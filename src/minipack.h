@@ -20,18 +20,18 @@
 
 bool minipack_is_pos_fixnum(void *ptr);
 
-uint8_t minipack_unpack_pos_fixnum(void *ptr);
+uint8_t minipack_unpack_pos_fixnum(void *ptr, size_t *sz);
 
-void minipack_pack_pos_fixnum(void *ptr, uint8_t value);
+void minipack_pack_pos_fixnum(void *ptr, uint8_t value, size_t *sz);
 
 
 //======================================
 // Negative Fixnum
 //======================================
 
-int8_t minipack_unpack_neg_fixnum(void *ptr);
+int8_t minipack_unpack_neg_fixnum(void *ptr, size_t *sz);
 
-void minipack_pack_neg_fixnum(void *ptr, int8_t value);
+void minipack_pack_neg_fixnum(void *ptr, int8_t value, size_t *sz);
 
 
 
@@ -58,9 +58,9 @@ void minipack_pack_uint(void *ptr, uint64_t value, size_t *sz);
 
 bool minipack_is_uint8(void *ptr);
 
-uint8_t minipack_unpack_uint8(void *ptr);
+uint8_t minipack_unpack_uint8(void *ptr, size_t *sz);
 
-void minipack_pack_uint8(void *ptr, uint8_t value);
+void minipack_pack_uint8(void *ptr, uint8_t value, size_t *sz);
 
 
 //======================================
@@ -69,9 +69,9 @@ void minipack_pack_uint8(void *ptr, uint8_t value);
 
 bool minipack_is_uint16(void *ptr);
 
-uint16_t minipack_unpack_uint16(void *ptr);
+uint16_t minipack_unpack_uint16(void *ptr, size_t *sz);
 
-void minipack_pack_uint16(void *ptr, uint16_t value);
+void minipack_pack_uint16(void *ptr, uint16_t value, size_t *sz);
 
 
 //======================================
@@ -80,9 +80,9 @@ void minipack_pack_uint16(void *ptr, uint16_t value);
 
 bool minipack_is_uint32(void *ptr);
 
-uint32_t minipack_unpack_uint32(void *ptr);
+uint32_t minipack_unpack_uint32(void *ptr, size_t *sz);
 
-void minipack_pack_uint32(void *ptr, uint32_t value);
+void minipack_pack_uint32(void *ptr, uint32_t value, size_t *sz);
 
 
 //======================================
@@ -91,9 +91,9 @@ void minipack_pack_uint32(void *ptr, uint32_t value);
 
 bool minipack_is_uint64(void *ptr);
 
-uint64_t minipack_unpack_uint64(void *ptr);
+uint64_t minipack_unpack_uint64(void *ptr, size_t *sz);
 
-void minipack_pack_uint64(void *ptr, uint64_t value);
+void minipack_pack_uint64(void *ptr, uint64_t value, size_t *sz);
 
 
 
@@ -120,9 +120,9 @@ void minipack_pack_int(void *ptr, int64_t value, size_t *sz);
 
 bool minipack_is_int8(void *ptr);
 
-int8_t minipack_unpack_int8(void *ptr);
+int8_t minipack_unpack_int8(void *ptr, size_t *sz);
 
-void minipack_pack_int8(void *ptr, int8_t value);
+void minipack_pack_int8(void *ptr, int8_t value, size_t *sz);
 
 
 //======================================
@@ -131,9 +131,9 @@ void minipack_pack_int8(void *ptr, int8_t value);
 
 bool minipack_is_int16(void *ptr);
 
-int16_t minipack_unpack_int16(void *ptr);
+int16_t minipack_unpack_int16(void *ptr, size_t *sz);
 
-void minipack_pack_int16(void *ptr, int16_t value);
+void minipack_pack_int16(void *ptr, int16_t value, size_t *sz);
 
 
 //======================================
@@ -142,9 +142,9 @@ void minipack_pack_int16(void *ptr, int16_t value);
 
 bool minipack_is_int32(void *ptr);
 
-int32_t minipack_unpack_int32(void *ptr);
+int32_t minipack_unpack_int32(void *ptr, size_t *sz);
 
-void minipack_pack_int32(void *ptr, int32_t value);
+void minipack_pack_int32(void *ptr, int32_t value, size_t *sz);
 
 
 //======================================
@@ -153,9 +153,9 @@ void minipack_pack_int32(void *ptr, int32_t value);
 
 bool minipack_is_int64(void *ptr);
 
-int64_t minipack_unpack_int64(void *ptr);
+int64_t minipack_unpack_int64(void *ptr, size_t *sz);
 
-void minipack_pack_int64(void *ptr, int64_t value);
+void minipack_pack_int64(void *ptr, int64_t value, size_t *sz);
 
 
 //==============================================================================

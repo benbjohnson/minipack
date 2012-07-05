@@ -213,10 +213,12 @@ bool minipack_is_pos_fixnum(void *ptr)
 // Reads a positive fixnum from a given memory address.
 //
 // ptr - A pointer to where the fixnum should be read from.
+// sz  - A pointer to where the size of the element should be stored.
 //
 // Returns an unsigned 8-bit integer value for the fixnum.
-uint8_t minipack_unpack_pos_fixnum(void *ptr)
+uint8_t minipack_unpack_pos_fixnum(void *ptr, size_t *sz)
 {
+    *sz = POS_FIXNUM_SIZE;
     uint8_t value = *((uint8_t*)ptr);
     return value & POS_FIXNUM_VALUE_MASK;
 }
@@ -224,8 +226,10 @@ uint8_t minipack_unpack_pos_fixnum(void *ptr)
 // Writes a positive fixnum to a given memory address.
 //
 // ptr - A pointer to where the fixnum should be written to.
-void minipack_pack_pos_fixnum(void *ptr, uint8_t value)
+// sz  - A pointer to where the size of the element should be stored.
+void minipack_pack_pos_fixnum(void *ptr, uint8_t value, size_t *sz)
 {
+    *sz = POS_FIXNUM_SIZE;
     *((uint8_t*)ptr) = value & POS_FIXNUM_VALUE_MASK;
 }
 
@@ -247,10 +251,12 @@ bool minipack_is_neg_fixnum(void *ptr)
 // Reads a negative fixnum from a given memory address.
 //
 // ptr - A pointer to where the fixnum should be read from.
+// sz  - A pointer to where the size of the element should be stored.
 //
 // Returns a signed 8-bit integer value for the fixnum.
-int8_t minipack_unpack_neg_fixnum(void *ptr)
+int8_t minipack_unpack_neg_fixnum(void *ptr, size_t *sz)
 {
+    *sz = NEG_FIXNUM_SIZE;
     int8_t value = *((int8_t*)ptr) & NEG_FIXNUM_VALUE_MASK;
     return (32-value) * -1;
 }
@@ -258,8 +264,10 @@ int8_t minipack_unpack_neg_fixnum(void *ptr)
 // Writes a negative fixnum from a given memory address.
 //
 // ptr - A pointer to where the fixnum should be written to.
-void minipack_pack_neg_fixnum(void *ptr, int8_t value)
+// sz  - A pointer to where the size of the element should be stored.
+void minipack_pack_neg_fixnum(void *ptr, int8_t value, size_t *sz)
 {
+    *sz = NEG_FIXNUM_SIZE;
     *((int8_t*)ptr) = (32 + value) | NEG_FIXNUM_TYPE;
 }
 
@@ -310,24 +318,22 @@ size_t minipack_sizeof_uint(uint64_t value)
 uint64_t minipack_unpack_uint(void *ptr, size_t *sz)
 {
     if(minipack_is_pos_fixnum(ptr)) {
-        *sz = POS_FIXNUM_SIZE;
-        return (uint64_t)minipack_unpack_pos_fixnum(ptr);
+        return (uint64_t)minipack_unpack_pos_fixnum(ptr, sz);
     }
     else if(minipack_is_uint8(ptr)) {
-        *sz = UINT8_SIZE;
-        return (uint64_t)minipack_unpack_uint8(ptr);
+        return (uint64_t)minipack_unpack_uint8(ptr, sz);
     }
     else if(minipack_is_uint16(ptr)) {
         *sz = UINT16_SIZE;
-        return (uint64_t)minipack_unpack_uint16(ptr);
+        return (uint64_t)minipack_unpack_uint16(ptr, sz);
     }
     else if(minipack_is_uint32(ptr)) {
         *sz = UINT32_SIZE;
-        return (uint64_t)minipack_unpack_uint32(ptr);
+        return (uint64_t)minipack_unpack_uint32(ptr, sz);
     }
     else if(minipack_is_uint64(ptr)) {
         *sz = UINT64_SIZE;
-        return minipack_unpack_uint64(ptr);
+        return minipack_unpack_uint64(ptr, sz);
     }
     else {
         *sz = 0;
@@ -342,22 +348,23 @@ uint64_t minipack_unpack_uint(void *ptr, size_t *sz)
 // sz    - A pointer to where the size of the element will be returned.
 void minipack_pack_uint(void *ptr, uint64_t value, size_t *sz)
 {
-    *sz = minipack_sizeof_uint(value);
-
     if(value <= POS_FIXNUM_MAX) {
-        minipack_pack_pos_fixnum(ptr, (uint8_t)value);
+        minipack_pack_pos_fixnum(ptr, (uint8_t)value, sz);
     }
     else if(value <= UINT8_MAX) {
-        minipack_pack_uint8(ptr, (uint8_t)value);
+        minipack_pack_uint8(ptr, (uint8_t)value, sz);
     }
     else if(value <= UINT16_MAX) {
-        minipack_pack_uint16(ptr, (uint16_t)value);
+        minipack_pack_uint16(ptr, (uint16_t)value, sz);
     }
     else if(value <= UINT32_MAX) {
-        minipack_pack_uint32(ptr, (uint32_t)value);
+        minipack_pack_uint32(ptr, (uint32_t)value, sz);
     }
     else if(value <= UINT64_MAX) {
-        minipack_pack_uint64(ptr, value);
+        minipack_pack_uint64(ptr, value, sz);
+    }
+    else {
+        *sz = 0;
     }
 }
 
@@ -379,18 +386,22 @@ bool minipack_is_uint8(void *ptr)
 // Reads an unsigned 8-bit integer from a given memory address.
 //
 // ptr - A pointer to where the unsigned int should be read from.
+// sz  - A pointer to where the size of the element should be stored.
 //
 // Returns an unsigned 8-bit integer value.
-uint8_t minipack_unpack_uint8(void *ptr)
+uint8_t minipack_unpack_uint8(void *ptr, size_t *sz)
 {
+    *sz = UINT8_SIZE;
     return *((uint8_t*)(ptr+1));
 }
 
 // Writes an unsigned 8-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void minipack_pack_uint8(void *ptr, uint8_t value)
+// sz  - A pointer to where the size of the element should be stored.
+void minipack_pack_uint8(void *ptr, uint8_t value, size_t *sz)
 {
+    *sz = UINT8_SIZE;
     *((uint8_t*)ptr)     = UINT8_TYPE;
     *((uint8_t*)(ptr+1)) = value;
 }
@@ -413,10 +424,12 @@ bool minipack_is_uint16(void *ptr)
 // Reads an unsigned 16-bit integer from a given memory address.
 //
 // ptr - A pointer to where the unsigned int should be read from.
+// sz  - A pointer to where the size of the element should be stored.
 //
 // Returns an unsigned 16-bit integer value.
-uint16_t minipack_unpack_uint16(void *ptr)
+uint16_t minipack_unpack_uint16(void *ptr, size_t *sz)
 {
+    *sz = UINT16_SIZE;
     uint16_t value = *((uint16_t*)(ptr+1));
     return ntohs(value);
 }
@@ -424,8 +437,10 @@ uint16_t minipack_unpack_uint16(void *ptr)
 // Writes an unsigned 16-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void minipack_pack_uint16(void *ptr, uint16_t value)
+// sz  - A pointer to where the size of the element should be stored.
+void minipack_pack_uint16(void *ptr, uint16_t value, size_t *sz)
 {
+    *sz = UINT16_SIZE;
     *((uint8_t*)ptr)      = UINT16_TYPE;
     *((uint16_t*)(ptr+1)) = htons(value);
 }
@@ -448,10 +463,12 @@ bool minipack_is_uint32(void *ptr)
 // Reads an unsigned 32-bit integer from a given memory address.
 //
 // ptr - A pointer to where the unsigned int should be read from.
+// sz  - A pointer to where the size of the element should be stored.
 //
 // Returns an unsigned 32-bit integer value.
-uint32_t minipack_unpack_uint32(void *ptr)
+uint32_t minipack_unpack_uint32(void *ptr, size_t *sz)
 {
+    *sz = UINT32_SIZE;
     uint32_t value = *((uint32_t*)(ptr+1));
     return ntohl(value);
 }
@@ -459,8 +476,10 @@ uint32_t minipack_unpack_uint32(void *ptr)
 // Writes an unsigned 32-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void minipack_pack_uint32(void *ptr, uint32_t value)
+// sz  - A pointer to where the size of the element should be stored.
+void minipack_pack_uint32(void *ptr, uint32_t value, size_t *sz)
 {
+    *sz = UINT32_SIZE;
     *((uint8_t*)ptr)      = UINT32_TYPE;
     *((uint32_t*)(ptr+1)) = htonl(value);
 }
@@ -483,10 +502,12 @@ bool minipack_is_uint64(void *ptr)
 // Reads an unsigned 64-bit integer from a given memory address.
 //
 // ptr - A pointer to where the unsigned int should be read from.
+// sz  - A pointer to where the size of the element should be stored.
 //
 // Returns an unsigned 64-bit integer value.
-uint64_t minipack_unpack_uint64(void *ptr)
+uint64_t minipack_unpack_uint64(void *ptr, size_t *sz)
 {
+    *sz = UINT64_SIZE;
     uint64_t value = *((uint64_t*)(ptr+1));
     return ntohll(value);
 }
@@ -494,8 +515,10 @@ uint64_t minipack_unpack_uint64(void *ptr)
 // Writes an unsigned 64-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void minipack_pack_uint64(void *ptr, uint64_t value)
+// sz  - A pointer to where the size of the element should be stored.
+void minipack_pack_uint64(void *ptr, uint64_t value, size_t *sz)
 {
+    *sz = UINT64_SIZE;
     *((uint8_t*)ptr)      = UINT64_TYPE;
     *((uint64_t*)(ptr+1)) = htonll(value);
 }
@@ -549,28 +572,25 @@ size_t minipack_int_sizeof(int64_t value)
 int64_t minipack_unpack_int(void *ptr, size_t *sz)
 {
     if(minipack_is_pos_fixnum(ptr)) {
-        *sz = POS_FIXNUM_SIZE;
-        return (int64_t)minipack_unpack_pos_fixnum(ptr);
+        return (int64_t)minipack_unpack_pos_fixnum(ptr, sz);
     }
     if(minipack_is_neg_fixnum(ptr)) {
-        *sz = NEG_FIXNUM_SIZE;
-        return (int64_t)minipack_unpack_neg_fixnum(ptr);
+        return (int64_t)minipack_unpack_neg_fixnum(ptr, sz);
     }
     else if(minipack_is_int8(ptr)) {
-        *sz = INT8_SIZE;
-        return (int64_t)minipack_unpack_int8(ptr);
+        return (int64_t)minipack_unpack_int8(ptr, sz);
     }
     else if(minipack_is_int16(ptr)) {
         *sz = INT16_SIZE;
-        return (int64_t)minipack_unpack_int16(ptr);
+        return (int64_t)minipack_unpack_int16(ptr, sz);
     }
     else if(minipack_is_int32(ptr)) {
         *sz = INT32_SIZE;
-        return (int64_t)minipack_unpack_int32(ptr);
+        return (int64_t)minipack_unpack_int32(ptr, sz);
     }
     else if(minipack_is_int64(ptr)) {
         *sz = INT64_SIZE;
-        return minipack_unpack_int64(ptr);
+        return minipack_unpack_int64(ptr, sz);
     }
     else {
         *sz = 0;
@@ -585,25 +605,26 @@ int64_t minipack_unpack_int(void *ptr, size_t *sz)
 // sz    - A pointer to where the size of the element will be returned.
 void minipack_pack_int(void *ptr, int64_t value, size_t *sz)
 {
-    *sz = minipack_int_sizeof(value);
-
     if(value >= POS_FIXNUM_MIN && value <= POS_FIXNUM_MAX) {
-        minipack_pack_pos_fixnum(ptr, (int8_t)value);
+        minipack_pack_pos_fixnum(ptr, (int8_t)value, sz);
     }
     else if(value >= NEG_FIXNUM_MIN && value <= NEG_FIXNUM_MAX) {
-        minipack_pack_pos_fixnum(ptr, (int8_t)value);
+        minipack_pack_pos_fixnum(ptr, (int8_t)value, sz);
     }
     else if(value >= INT8_MIN && value <= INT8_MAX) {
-        minipack_pack_int8(ptr, (int8_t)value);
+        minipack_pack_int8(ptr, (int8_t)value, sz);
     }
     else if(value >= INT16_MIN && value <= INT16_MAX) {
-        minipack_pack_int16(ptr, (int16_t)value);
+        minipack_pack_int16(ptr, (int16_t)value, sz);
     }
     else if(value >= INT32_MIN && value <= INT32_MAX) {
-        minipack_pack_int32(ptr, (int32_t)value);
+        minipack_pack_int32(ptr, (int32_t)value, sz);
     }
     else if(value >= INT64_MIN && value <= INT64_MAX) {
-        minipack_pack_int64(ptr, value);
+        minipack_pack_int64(ptr, value, sz);
+    }
+    else {
+        *sz = 0;
     }
 }
 
@@ -625,18 +646,22 @@ bool minipack_is_int8(void *ptr)
 // Reads an signed 8-bit integer from a given memory address.
 //
 // ptr - A pointer to where the signed int should be read from.
+// sz  - A pointer to where the size of the element should be stored.
 //
 // Returns an signed 8-bit integer value.
-int8_t minipack_unpack_int8(void *ptr)
+int8_t minipack_unpack_int8(void *ptr, size_t *sz)
 {
+    *sz = INT8_SIZE;
     return *((int8_t*)(ptr+1));
 }
 
 // Writes an signed 8-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void minipack_pack_int8(void *ptr, int8_t value)
+// sz  - A pointer to where the size of the element should be stored.
+void minipack_pack_int8(void *ptr, int8_t value, size_t *sz)
 {
+    *sz = INT8_SIZE;
     *((uint8_t*)ptr)    = INT8_TYPE;
     *((int8_t*)(ptr+1)) = value;
 }
@@ -659,18 +684,22 @@ bool minipack_is_int16(void *ptr)
 // Reads an signed 16-bit integer from a given memory address.
 //
 // ptr - A pointer to where the signed int should be read from.
+// sz  - A pointer to where the size of the element should be stored.
 //
 // Returns an signed 16-bit integer value.
-int16_t minipack_unpack_int16(void *ptr)
+int16_t minipack_unpack_int16(void *ptr, size_t *sz)
 {
+    *sz = INT16_SIZE;
     return ntohs(*((int16_t*)(ptr+1)));
 }
 
 // Writes an signed 16-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void minipack_pack_int16(void *ptr, int16_t value)
+// sz  - A pointer to where the size of the element should be stored.
+void minipack_pack_int16(void *ptr, int16_t value, size_t *sz)
 {
+    *sz = INT16_SIZE;
     *((uint8_t*)ptr)     = INT16_TYPE;
     *((int16_t*)(ptr+1)) = htons(value);
 }
@@ -693,18 +722,22 @@ bool minipack_is_int32(void *ptr)
 // Reads an signed 32-bit integer from a given memory address.
 //
 // ptr - A pointer to where the signed int should be read from.
+// sz  - A pointer to where the size of the element should be stored.
 //
 // Returns an signed 32-bit integer value.
-int32_t minipack_unpack_int32(void *ptr)
+int32_t minipack_unpack_int32(void *ptr, size_t *sz)
 {
+    *sz = INT32_SIZE;
     return ntohl(*((int32_t*)(ptr+1)));
 }
 
 // Writes an signed 32-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void minipack_pack_int32(void *ptr, int32_t value)
+// sz  - A pointer to where the size of the element should be stored.
+void minipack_pack_int32(void *ptr, int32_t value, size_t *sz)
 {
+    *sz = INT32_SIZE;
     *((uint8_t*)ptr)     = INT32_TYPE;
     *((int32_t*)(ptr+1)) = htonl(value);
 }
@@ -727,18 +760,22 @@ bool minipack_is_int64(void *ptr)
 // Reads an signed 64-bit integer from a given memory address.
 //
 // ptr - A pointer to where the signed int should be read from.
+// sz  - A pointer to where the size of the element should be stored.
 //
 // Returns an signed 64-bit integer value.
-int64_t minipack_unpack_int64(void *ptr)
+int64_t minipack_unpack_int64(void *ptr, size_t *sz)
 {
+    *sz = INT64_SIZE;
     return ntohll(*((int64_t*)(ptr+1)));
 }
 
 // Writes an signed 64-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void minipack_pack_int64(void *ptr, int64_t value)
+// sz  - A pointer to where the size of the element should be stored.
+void minipack_pack_int64(void *ptr, int64_t value, size_t *sz)
 {
+    *sz = INT64_SIZE;
     *((uint8_t*)ptr)     = INT64_TYPE;
     *((int64_t*)(ptr+1)) = htonll(value);
 }
