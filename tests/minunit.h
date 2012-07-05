@@ -122,8 +122,8 @@ int tests_run;
 #define mu_assert_msgpack_array(COUNT, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_array, COUNT, LENGTH, BYTES)
 #define mu_assert_msgpack_map(COUNT, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_map, COUNT, LENGTH, BYTES)
 
-#define mu_assert_msgpack_raw_hdr(COUNT, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_raw, COUNT, LENGTH, BYTES)
-#define mu_assert_msgpack_raw(COUNT, DATA, LENGTH, BYTES) do {\
+#define mu_assert_msgpack_raw(COUNT, LENGTH, BYTES) mu_assert_msgpack1(msgpack_pack_raw, COUNT, LENGTH, BYTES)
+#define mu_assert_msgpack_raw_body(COUNT, DATA, LENGTH, BYTES) do {\
     char *chars = (char*)DATA; \
     msgpack_sbuffer* buffer = msgpack_sbuffer_new(); \
     msgpack_packer* packer = msgpack_packer_new(buffer, msgpack_sbuffer_write); \

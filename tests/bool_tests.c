@@ -29,9 +29,9 @@ int test_is_bool() {
 }
 
 int test_bool_read() {
-    mu_assert(minipack_bool_read("\xC3") == true);
+    mu_assert(minipack_unpack_bool("\xC3") == true);
     mu_assert_msgpack_true(1, "\xC3");
-    mu_assert(minipack_bool_read("\xC2") == false);
+    mu_assert(minipack_unpack_bool("\xC2") == false);
     mu_assert_msgpack_false(1, "\xC2");
     return 0;
 }
@@ -39,10 +39,10 @@ int test_bool_read() {
 int test_bool_write() {
     uint8_t data[] = {0x00};
 
-    minipack_bool_write(data, true);
+    minipack_pack_bool(data, true);
     mu_assert_mem(data, 1, "\xC3");
 
-    minipack_bool_write(data, false);
+    minipack_pack_bool(data, false);
     mu_assert_mem(data, 1, "\xC2");
 
     return 0;

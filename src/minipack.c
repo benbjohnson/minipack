@@ -215,7 +215,7 @@ bool minipack_is_pos_fixnum(void *ptr)
 // ptr - A pointer to where the fixnum should be read from.
 //
 // Returns an unsigned 8-bit integer value for the fixnum.
-uint8_t minipack_pos_fixnum_read(void *ptr)
+uint8_t minipack_unpack_pos_fixnum(void *ptr)
 {
     uint8_t value = *((uint8_t*)ptr);
     return value & POS_FIXNUM_VALUE_MASK;
@@ -224,7 +224,7 @@ uint8_t minipack_pos_fixnum_read(void *ptr)
 // Writes a positive fixnum to a given memory address.
 //
 // ptr - A pointer to where the fixnum should be written to.
-void minipack_pos_fixnum_write(void *ptr, uint8_t value)
+void minipack_pack_pos_fixnum(void *ptr, uint8_t value)
 {
     *((uint8_t*)ptr) = value & POS_FIXNUM_VALUE_MASK;
 }
@@ -249,7 +249,7 @@ bool minipack_is_neg_fixnum(void *ptr)
 // ptr - A pointer to where the fixnum should be read from.
 //
 // Returns a signed 8-bit integer value for the fixnum.
-int8_t minipack_neg_fixnum_read(void *ptr)
+int8_t minipack_unpack_neg_fixnum(void *ptr)
 {
     int8_t value = *((int8_t*)ptr) & NEG_FIXNUM_VALUE_MASK;
     return (32-value) * -1;
@@ -258,7 +258,7 @@ int8_t minipack_neg_fixnum_read(void *ptr)
 // Writes a negative fixnum from a given memory address.
 //
 // ptr - A pointer to where the fixnum should be written to.
-void minipack_neg_fixnum_write(void *ptr, int8_t value)
+void minipack_pack_neg_fixnum(void *ptr, int8_t value)
 {
     *((int8_t*)ptr) = (32 + value) | NEG_FIXNUM_TYPE;
 }
@@ -280,7 +280,7 @@ void minipack_neg_fixnum_write(void *ptr, int8_t value)
 // value - The value to calculate the size of.
 //
 // Returns the number of bytes needed for the element.
-size_t minipack_uint_sizeof(uint64_t value)
+size_t minipack_sizeof_uint(uint64_t value)
 {
     if(value <= POS_FIXNUM_MAX) {
         return POS_FIXNUM_SIZE;
@@ -307,27 +307,27 @@ size_t minipack_uint_sizeof(uint64_t value)
 // sz  - A pointer to where the size of the element should be stored.
 //
 // Returns the value of the element.
-uint64_t minipack_uint_read(void *ptr, size_t *sz)
+uint64_t minipack_unpack_uint(void *ptr, size_t *sz)
 {
     if(minipack_is_pos_fixnum(ptr)) {
         *sz = POS_FIXNUM_SIZE;
-        return (uint64_t)minipack_pos_fixnum_read(ptr);
+        return (uint64_t)minipack_unpack_pos_fixnum(ptr);
     }
     else if(minipack_is_uint8(ptr)) {
         *sz = UINT8_SIZE;
-        return (uint64_t)minipack_uint8_read(ptr);
+        return (uint64_t)minipack_unpack_uint8(ptr);
     }
     else if(minipack_is_uint16(ptr)) {
         *sz = UINT16_SIZE;
-        return (uint64_t)minipack_uint16_read(ptr);
+        return (uint64_t)minipack_unpack_uint16(ptr);
     }
     else if(minipack_is_uint32(ptr)) {
         *sz = UINT32_SIZE;
-        return (uint64_t)minipack_uint32_read(ptr);
+        return (uint64_t)minipack_unpack_uint32(ptr);
     }
     else if(minipack_is_uint64(ptr)) {
         *sz = UINT64_SIZE;
-        return minipack_uint64_read(ptr);
+        return minipack_unpack_uint64(ptr);
     }
     else {
         *sz = 0;
@@ -340,24 +340,24 @@ uint64_t minipack_uint_read(void *ptr, size_t *sz)
 // ptr   - A pointer to where the integer should be written to.
 // value - The value to write.
 // sz    - A pointer to where the size of the element will be returned.
-void minipack_uint_write(void *ptr, uint64_t value, size_t *sz)
+void minipack_pack_uint(void *ptr, uint64_t value, size_t *sz)
 {
-    *sz = minipack_uint_sizeof(value);
+    *sz = minipack_sizeof_uint(value);
 
     if(value <= POS_FIXNUM_MAX) {
-        minipack_pos_fixnum_write(ptr, (uint8_t)value);
+        minipack_pack_pos_fixnum(ptr, (uint8_t)value);
     }
     else if(value <= UINT8_MAX) {
-        minipack_uint8_write(ptr, (uint8_t)value);
+        minipack_pack_uint8(ptr, (uint8_t)value);
     }
     else if(value <= UINT16_MAX) {
-        minipack_uint16_write(ptr, (uint16_t)value);
+        minipack_pack_uint16(ptr, (uint16_t)value);
     }
     else if(value <= UINT32_MAX) {
-        minipack_uint32_write(ptr, (uint32_t)value);
+        minipack_pack_uint32(ptr, (uint32_t)value);
     }
     else if(value <= UINT64_MAX) {
-        minipack_uint64_write(ptr, value);
+        minipack_pack_uint64(ptr, value);
     }
 }
 
@@ -381,7 +381,7 @@ bool minipack_is_uint8(void *ptr)
 // ptr - A pointer to where the unsigned int should be read from.
 //
 // Returns an unsigned 8-bit integer value.
-uint8_t minipack_uint8_read(void *ptr)
+uint8_t minipack_unpack_uint8(void *ptr)
 {
     return *((uint8_t*)(ptr+1));
 }
@@ -389,7 +389,7 @@ uint8_t minipack_uint8_read(void *ptr)
 // Writes an unsigned 8-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void minipack_uint8_write(void *ptr, uint8_t value)
+void minipack_pack_uint8(void *ptr, uint8_t value)
 {
     *((uint8_t*)ptr)     = UINT8_TYPE;
     *((uint8_t*)(ptr+1)) = value;
@@ -415,7 +415,7 @@ bool minipack_is_uint16(void *ptr)
 // ptr - A pointer to where the unsigned int should be read from.
 //
 // Returns an unsigned 16-bit integer value.
-uint16_t minipack_uint16_read(void *ptr)
+uint16_t minipack_unpack_uint16(void *ptr)
 {
     uint16_t value = *((uint16_t*)(ptr+1));
     return ntohs(value);
@@ -424,7 +424,7 @@ uint16_t minipack_uint16_read(void *ptr)
 // Writes an unsigned 16-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void minipack_uint16_write(void *ptr, uint16_t value)
+void minipack_pack_uint16(void *ptr, uint16_t value)
 {
     *((uint8_t*)ptr)      = UINT16_TYPE;
     *((uint16_t*)(ptr+1)) = htons(value);
@@ -450,7 +450,7 @@ bool minipack_is_uint32(void *ptr)
 // ptr - A pointer to where the unsigned int should be read from.
 //
 // Returns an unsigned 32-bit integer value.
-uint32_t minipack_uint32_read(void *ptr)
+uint32_t minipack_unpack_uint32(void *ptr)
 {
     uint32_t value = *((uint32_t*)(ptr+1));
     return ntohl(value);
@@ -459,7 +459,7 @@ uint32_t minipack_uint32_read(void *ptr)
 // Writes an unsigned 32-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void minipack_uint32_write(void *ptr, uint32_t value)
+void minipack_pack_uint32(void *ptr, uint32_t value)
 {
     *((uint8_t*)ptr)      = UINT32_TYPE;
     *((uint32_t*)(ptr+1)) = htonl(value);
@@ -485,7 +485,7 @@ bool minipack_is_uint64(void *ptr)
 // ptr - A pointer to where the unsigned int should be read from.
 //
 // Returns an unsigned 64-bit integer value.
-uint64_t minipack_uint64_read(void *ptr)
+uint64_t minipack_unpack_uint64(void *ptr)
 {
     uint64_t value = *((uint64_t*)(ptr+1));
     return ntohll(value);
@@ -494,7 +494,7 @@ uint64_t minipack_uint64_read(void *ptr)
 // Writes an unsigned 64-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void minipack_uint64_write(void *ptr, uint64_t value)
+void minipack_pack_uint64(void *ptr, uint64_t value)
 {
     *((uint8_t*)ptr)      = UINT64_TYPE;
     *((uint64_t*)(ptr+1)) = htonll(value);
@@ -546,31 +546,31 @@ size_t minipack_int_sizeof(int64_t value)
 // sz  - A pointer to where the size of the element should be stored.
 //
 // Returns the value of the element
-int64_t minipack_int_read(void *ptr, size_t *sz)
+int64_t minipack_unpack_int(void *ptr, size_t *sz)
 {
     if(minipack_is_pos_fixnum(ptr)) {
         *sz = POS_FIXNUM_SIZE;
-        return (int64_t)minipack_pos_fixnum_read(ptr);
+        return (int64_t)minipack_unpack_pos_fixnum(ptr);
     }
     if(minipack_is_neg_fixnum(ptr)) {
         *sz = NEG_FIXNUM_SIZE;
-        return (int64_t)minipack_neg_fixnum_read(ptr);
+        return (int64_t)minipack_unpack_neg_fixnum(ptr);
     }
     else if(minipack_is_int8(ptr)) {
         *sz = INT8_SIZE;
-        return (int64_t)minipack_int8_read(ptr);
+        return (int64_t)minipack_unpack_int8(ptr);
     }
     else if(minipack_is_int16(ptr)) {
         *sz = INT16_SIZE;
-        return (int64_t)minipack_int16_read(ptr);
+        return (int64_t)minipack_unpack_int16(ptr);
     }
     else if(minipack_is_int32(ptr)) {
         *sz = INT32_SIZE;
-        return (int64_t)minipack_int32_read(ptr);
+        return (int64_t)minipack_unpack_int32(ptr);
     }
     else if(minipack_is_int64(ptr)) {
         *sz = INT64_SIZE;
-        return minipack_int64_read(ptr);
+        return minipack_unpack_int64(ptr);
     }
     else {
         *sz = 0;
@@ -583,27 +583,27 @@ int64_t minipack_int_read(void *ptr, size_t *sz)
 // ptr   - A pointer to where the integer should be written to.
 // value - The value to write.
 // sz    - A pointer to where the size of the element will be returned.
-void minipack_int_write(void *ptr, int64_t value, size_t *sz)
+void minipack_pack_int(void *ptr, int64_t value, size_t *sz)
 {
     *sz = minipack_int_sizeof(value);
 
     if(value >= POS_FIXNUM_MIN && value <= POS_FIXNUM_MAX) {
-        minipack_pos_fixnum_write(ptr, (int8_t)value);
+        minipack_pack_pos_fixnum(ptr, (int8_t)value);
     }
     else if(value >= NEG_FIXNUM_MIN && value <= NEG_FIXNUM_MAX) {
-        minipack_pos_fixnum_write(ptr, (int8_t)value);
+        minipack_pack_pos_fixnum(ptr, (int8_t)value);
     }
     else if(value >= INT8_MIN && value <= INT8_MAX) {
-        minipack_int8_write(ptr, (int8_t)value);
+        minipack_pack_int8(ptr, (int8_t)value);
     }
     else if(value >= INT16_MIN && value <= INT16_MAX) {
-        minipack_int16_write(ptr, (int16_t)value);
+        minipack_pack_int16(ptr, (int16_t)value);
     }
     else if(value >= INT32_MIN && value <= INT32_MAX) {
-        minipack_int32_write(ptr, (int32_t)value);
+        minipack_pack_int32(ptr, (int32_t)value);
     }
     else if(value >= INT64_MIN && value <= INT64_MAX) {
-        minipack_int64_write(ptr, value);
+        minipack_pack_int64(ptr, value);
     }
 }
 
@@ -627,7 +627,7 @@ bool minipack_is_int8(void *ptr)
 // ptr - A pointer to where the signed int should be read from.
 //
 // Returns an signed 8-bit integer value.
-int8_t minipack_int8_read(void *ptr)
+int8_t minipack_unpack_int8(void *ptr)
 {
     return *((int8_t*)(ptr+1));
 }
@@ -635,7 +635,7 @@ int8_t minipack_int8_read(void *ptr)
 // Writes an signed 8-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void minipack_int8_write(void *ptr, int8_t value)
+void minipack_pack_int8(void *ptr, int8_t value)
 {
     *((uint8_t*)ptr)    = INT8_TYPE;
     *((int8_t*)(ptr+1)) = value;
@@ -661,7 +661,7 @@ bool minipack_is_int16(void *ptr)
 // ptr - A pointer to where the signed int should be read from.
 //
 // Returns an signed 16-bit integer value.
-int16_t minipack_int16_read(void *ptr)
+int16_t minipack_unpack_int16(void *ptr)
 {
     return ntohs(*((int16_t*)(ptr+1)));
 }
@@ -669,7 +669,7 @@ int16_t minipack_int16_read(void *ptr)
 // Writes an signed 16-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void minipack_int16_write(void *ptr, int16_t value)
+void minipack_pack_int16(void *ptr, int16_t value)
 {
     *((uint8_t*)ptr)     = INT16_TYPE;
     *((int16_t*)(ptr+1)) = htons(value);
@@ -695,7 +695,7 @@ bool minipack_is_int32(void *ptr)
 // ptr - A pointer to where the signed int should be read from.
 //
 // Returns an signed 32-bit integer value.
-int32_t minipack_int32_read(void *ptr)
+int32_t minipack_unpack_int32(void *ptr)
 {
     return ntohl(*((int32_t*)(ptr+1)));
 }
@@ -703,7 +703,7 @@ int32_t minipack_int32_read(void *ptr)
 // Writes an signed 32-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void minipack_int32_write(void *ptr, int32_t value)
+void minipack_pack_int32(void *ptr, int32_t value)
 {
     *((uint8_t*)ptr)     = INT32_TYPE;
     *((int32_t*)(ptr+1)) = htonl(value);
@@ -729,7 +729,7 @@ bool minipack_is_int64(void *ptr)
 // ptr - A pointer to where the signed int should be read from.
 //
 // Returns an signed 64-bit integer value.
-int64_t minipack_int64_read(void *ptr)
+int64_t minipack_unpack_int64(void *ptr)
 {
     return ntohll(*((int64_t*)(ptr+1)));
 }
@@ -737,7 +737,7 @@ int64_t minipack_int64_read(void *ptr)
 // Writes an signed 64-bit integer to a given memory address.
 //
 // ptr - A pointer to where the integer should be written to.
-void minipack_int64_write(void *ptr, int64_t value)
+void minipack_pack_int64(void *ptr, int64_t value)
 {
     *((uint8_t*)ptr)     = INT64_TYPE;
     *((int64_t*)(ptr+1)) = htonll(value);
@@ -767,7 +767,7 @@ bool minipack_is_nil(void *ptr)
 // Writes a nil to a given memory address.
 //
 // ptr - A pointer to where the nil should be written to.
-void minipack_nil_write(void *ptr)
+void minipack_pack_nil(void *ptr)
 {
     *((uint8_t*)ptr) = NIL_TYPE;
 }
@@ -818,7 +818,7 @@ bool minipack_is_false(void *ptr)
 // ptr - A pointer to where the boolean should be read from.
 //
 // Returns a boolean value.
-bool minipack_bool_read(void *ptr)
+bool minipack_unpack_bool(void *ptr)
 {
     return minipack_is_true(ptr);
 }
@@ -826,7 +826,7 @@ bool minipack_bool_read(void *ptr)
 // Writes a boolean to a given memory address.
 //
 // ptr - A pointer to where the boolean should be written to.
-void minipack_bool_write(void *ptr, bool value)
+void minipack_pack_bool(void *ptr, bool value)
 {
     if(value) {
         *((uint8_t*)ptr) = TRUE_TYPE;
@@ -862,7 +862,7 @@ bool minipack_is_float(void *ptr)
 // ptr - A pointer to where the float should be read from.
 //
 // Returns a float value.
-float minipack_float_read(void *ptr)
+float minipack_unpack_float(void *ptr)
 {
     // Cast bytes to int32 to use ntohl.
     uint32_t value = *((uint32_t*)(ptr+1));
@@ -873,7 +873,7 @@ float minipack_float_read(void *ptr)
 // Writes a float to a given memory address.
 //
 // ptr - A pointer to where the float should be written to.
-void minipack_float_write(void *ptr, float value)
+void minipack_pack_float(void *ptr, float value)
 {
     uint32_t bytes = htonl(*((uint32_t*)&value));
     *((uint8_t*)ptr)   = FLOAT_TYPE;
@@ -900,7 +900,7 @@ bool minipack_is_double(void *ptr)
 // ptr - A pointer to where the double should be read from.
 //
 // Returns a double value.
-double minipack_double_read(void *ptr)
+double minipack_unpack_double(void *ptr)
 {
     // Cast bytes to int64 to use ntohll.
     uint64_t value = *((uint64_t*)(ptr+1));
@@ -911,7 +911,7 @@ double minipack_double_read(void *ptr)
 // Writes a double to a given memory address.
 //
 // ptr - A pointer to where the double should be written to.
-void minipack_double_write(void *ptr, double value)
+void minipack_pack_double(void *ptr, double value)
 {
     uint64_t bytes = htonll(*((uint64_t*)&value));
     *((uint8_t*)ptr)    = DOUBLE_TYPE;
@@ -945,7 +945,7 @@ bool minipack_is_raw(void *ptr)
 // length - The length of the raw bytes.
 //
 // Returns the number of bytes needed for the header.
-size_t minipack_raw_hdr_sizeof(uint32_t length)
+size_t minipack_raw_sizeof(uint32_t length)
 {
     if(length <= FIXRAW_MAXSIZE) {
         return FIXRAW_HDRSIZE;
@@ -966,19 +966,19 @@ size_t minipack_raw_hdr_sizeof(uint32_t length)
 // hdrsz - A pointer to where the size of the header will be returned to.
 //
 // Returns the number of bytes in the raw bytes.
-uint32_t minipack_raw_read_hdr(void *ptr, size_t *hdrsz)
+uint32_t minipack_unpack_raw(void *ptr, size_t *hdrsz)
 {
     if(minipack_is_fixraw(ptr)) {
         *hdrsz = FIXRAW_HDRSIZE;
-        return (uint32_t)minipack_fixraw_read_length(ptr);
+        return (uint32_t)minipack_unpack_fixraw(ptr);
     }
     else if(minipack_is_raw16(ptr)) {
         *hdrsz = RAW16_HDRSIZE;
-        return (uint32_t)minipack_raw16_read_length(ptr);
+        return (uint32_t)minipack_unpack_raw16(ptr);
     }
     else if(minipack_is_raw32(ptr)) {
         *hdrsz = RAW32_HDRSIZE;
-        return minipack_raw32_read_length(ptr);
+        return minipack_unpack_raw32(ptr);
     }
     else {
         *hdrsz = 0;
@@ -992,19 +992,19 @@ uint32_t minipack_raw_read_hdr(void *ptr, size_t *hdrsz)
 // length - The number of bytes to write.
 // bytes  - A pointer to the raw bytes to be written.
 // sz     - A pointer to where the total size of the element will be returned.
-void minipack_raw_write(void *ptr, uint32_t length, void *bytes, size_t *sz)
+void minipack_pack_raw(void *ptr, uint32_t length, void *bytes, size_t *sz)
 {
     if(length <= FIXRAW_MAXSIZE) {
         *sz = FIXRAW_HDRSIZE + length;
-        minipack_fixraw_write(ptr, (uint8_t)length, bytes);
+        minipack_pack_fixraw(ptr, (uint8_t)length, bytes);
     }
     else if(length <= RAW16_MAXSIZE) {
         *sz = RAW16_HDRSIZE + length;
-        minipack_raw16_write(ptr, (uint16_t)length, bytes);
+        minipack_pack_raw16(ptr, (uint16_t)length, bytes);
     }
     else if(length <= RAW32_MAXSIZE) {
         *sz = RAW32_HDRSIZE + length;
-        minipack_raw32_write(ptr, length, bytes);
+        minipack_pack_raw32(ptr, length, bytes);
     }
     else {
         *sz = 0;
@@ -1031,7 +1031,7 @@ bool minipack_is_fixraw(void *ptr)
 // ptr - A pointer to where the fix raw should be read from.
 //
 // Returns the length of the bytes.
-uint8_t minipack_fixraw_read_length(void *ptr)
+uint8_t minipack_unpack_fixraw(void *ptr)
 {
     return *((uint8_t*)ptr) & FIXRAW_VALUE_MASK;
 }
@@ -1039,7 +1039,7 @@ uint8_t minipack_fixraw_read_length(void *ptr)
 // Writes a fix raw byte array to a given memory address.
 //
 // ptr - A pointer to where the bytes should be written to.
-void minipack_fixraw_write(void *ptr, uint8_t length, void *bytes)
+void minipack_pack_fixraw(void *ptr, uint8_t length, void *bytes)
 {
     // Write length.
     *((uint8_t*)ptr) = (length & FIXRAW_VALUE_MASK) | FIXRAW_TYPE;
@@ -1068,7 +1068,7 @@ bool minipack_is_raw16(void *ptr)
 // ptr - A pointer to where the raw 16 should be read from.
 //
 // Returns the length of the bytes.
-uint16_t minipack_raw16_read_length(void *ptr)
+uint16_t minipack_unpack_raw16(void *ptr)
 {
     return ntohs(*((uint16_t*)(ptr+1)));
 }
@@ -1076,7 +1076,7 @@ uint16_t minipack_raw16_read_length(void *ptr)
 // Writes a raw 16 byte array to a given memory address.
 //
 // ptr - A pointer to where the bytes should be written to.
-void minipack_raw16_write(void *ptr, uint16_t length, void *bytes)
+void minipack_pack_raw16(void *ptr, uint16_t length, void *bytes)
 {
     // Write header.
     *((uint8_t*)ptr)      = RAW16_TYPE;
@@ -1106,7 +1106,7 @@ bool minipack_is_raw32(void *ptr)
 // ptr - A pointer to where the raw 32 should be read from.
 //
 // Returns the length of the bytes.
-uint32_t minipack_raw32_read_length(void *ptr)
+uint32_t minipack_unpack_raw32(void *ptr)
 {
     return ntohl(*((uint32_t*)(ptr+1)));
 }
@@ -1114,7 +1114,7 @@ uint32_t minipack_raw32_read_length(void *ptr)
 // Writes a raw 32 byte array to a given memory address.
 //
 // ptr - A pointer to where the bytes should be written to.
-void minipack_raw32_write(void *ptr, uint32_t length, void *bytes)
+void minipack_pack_raw32(void *ptr, uint32_t length, void *bytes)
 {
     // Write header.
     *((uint8_t*)ptr)      = RAW32_TYPE;
@@ -1151,7 +1151,7 @@ bool minipack_is_array(void *ptr)
 // count - The number of elements in the array.
 //
 // Returns the number of bytes needed for the header.
-size_t minipack_array_hdr_sizeof(uint32_t count)
+size_t minipack_array_sizeof(uint32_t count)
 {
     if(count <= FIXARRAY_MAXSIZE) {
         return FIXARRAY_HDRSIZE;
@@ -1172,19 +1172,19 @@ size_t minipack_array_hdr_sizeof(uint32_t count)
 // hdrsz - A pointer to where the size of the header will be returned to.
 //
 // Returns the number of elements in the array.
-uint32_t minipack_array_read_hdr(void *ptr, size_t *hdrsz)
+uint32_t minipack_unpack_array(void *ptr, size_t *hdrsz)
 {
     if(minipack_is_fixarray(ptr)) {
         *hdrsz = FIXARRAY_HDRSIZE;
-        return (uint32_t)minipack_fixarray_read_count(ptr);
+        return (uint32_t)minipack_unpack_fixarray(ptr);
     }
     else if(minipack_is_array16(ptr)) {
         *hdrsz = ARRAY16_HDRSIZE;
-        return (uint32_t)minipack_array16_read_count(ptr);
+        return (uint32_t)minipack_unpack_array16(ptr);
     }
     else if(minipack_is_array32(ptr)) {
         *hdrsz = ARRAY32_HDRSIZE;
-        return minipack_array32_read_count(ptr);
+        return minipack_unpack_array32(ptr);
     }
     else {
         *hdrsz = 0;
@@ -1197,19 +1197,19 @@ uint32_t minipack_array_read_hdr(void *ptr, size_t *hdrsz)
 // ptr   - A pointer to where the integer should be written to.
 // count - The number of elements in the array.
 // sz    - A pointer to where the total size of the element will be returned.
-void minipack_array_write_hdr(void *ptr, uint32_t count, size_t *sz)
+void minipack_pack_array(void *ptr, uint32_t count, size_t *sz)
 {
     if(count <= FIXARRAY_MAXSIZE) {
         *sz = FIXARRAY_HDRSIZE;
-        minipack_fixarray_write_hdr(ptr, (uint8_t)count);
+        minipack_pack_fixarray(ptr, (uint8_t)count);
     }
     else if(count <= ARRAY16_MAXSIZE) {
         *sz = ARRAY16_HDRSIZE;
-        minipack_array16_write_hdr(ptr, (uint16_t)count);
+        minipack_pack_array16(ptr, (uint16_t)count);
     }
     else if(count <= ARRAY32_MAXSIZE) {
         *sz = ARRAY32_HDRSIZE;
-        minipack_array32_write_hdr(ptr, count);
+        minipack_pack_array32(ptr, count);
     }
     else {
         *sz = 0;
@@ -1236,7 +1236,7 @@ bool minipack_is_fixarray(void *ptr)
 // ptr - A pointer to where the fix array should be read from.
 //
 // Returns the number of elements in the array.
-uint8_t minipack_fixarray_read_count(void *ptr)
+uint8_t minipack_unpack_fixarray(void *ptr)
 {
     return *((uint8_t*)ptr) & FIXARRAY_VALUE_MASK;
 }
@@ -1245,7 +1245,7 @@ uint8_t minipack_fixarray_read_count(void *ptr)
 //
 // ptr   - A pointer to where the header should be written to.
 // count - The number of elements in the array.
-void minipack_fixarray_write_hdr(void *ptr, uint8_t count)
+void minipack_pack_fixarray(void *ptr, uint8_t count)
 {
     *((uint8_t*)ptr) = (count & FIXARRAY_VALUE_MASK) | FIXARRAY_TYPE;
 }
@@ -1270,7 +1270,7 @@ bool minipack_is_array16(void *ptr)
 // ptr - A pointer to where the array 16 should be read from.
 //
 // Returns the number of elements in the array
-uint16_t minipack_array16_read_count(void *ptr)
+uint16_t minipack_unpack_array16(void *ptr)
 {
     return ntohs(*((uint16_t*)(ptr+1)));
 }
@@ -1278,7 +1278,7 @@ uint16_t minipack_array16_read_count(void *ptr)
 // Writes an array 16 header to a given memory address.
 //
 // ptr - A pointer to where the header should be written to.
-void minipack_array16_write_hdr(void *ptr, uint16_t count)
+void minipack_pack_array16(void *ptr, uint16_t count)
 {
     // Write header.
     *((uint8_t*)ptr)      = ARRAY16_TYPE;
@@ -1305,7 +1305,7 @@ bool minipack_is_array32(void *ptr)
 // ptr - A pointer to where the array 32 should be read from.
 //
 // Returns the number of elements in the array
-uint32_t minipack_array32_read_count(void *ptr)
+uint32_t minipack_unpack_array32(void *ptr)
 {
     return ntohl(*((uint32_t*)(ptr+1)));
 }
@@ -1313,7 +1313,7 @@ uint32_t minipack_array32_read_count(void *ptr)
 // Writes an array 32 header to a given memory address.
 //
 // ptr - A pointer to where the header should be written to.
-void minipack_array32_write_hdr(void *ptr, uint32_t count)
+void minipack_pack_array32(void *ptr, uint32_t count)
 {
     // Write header.
     *((uint8_t*)ptr)      = ARRAY32_TYPE;
@@ -1346,7 +1346,7 @@ bool minipack_is_map(void *ptr)
 // count - The number of elements in the map.
 //
 // Returns the number of bytes needed for the header.
-size_t minipack_map_hdr_sizeof(uint32_t count)
+size_t minipack_map_sizeof(uint32_t count)
 {
     if(count <= FIXMAP_MAXSIZE) {
         return FIXMAP_HDRSIZE;
@@ -1367,19 +1367,19 @@ size_t minipack_map_hdr_sizeof(uint32_t count)
 // hdrsz - A pointer to where the size of the header will be returned to.
 //
 // Returns the number of elements in the map.
-uint32_t minipack_map_read_hdr(void *ptr, size_t *hdrsz)
+uint32_t minipack_unpack_map(void *ptr, size_t *hdrsz)
 {
     if(minipack_is_fixmap(ptr)) {
         *hdrsz = FIXMAP_HDRSIZE;
-        return (uint32_t)minipack_fixmap_read_count(ptr);
+        return (uint32_t)minipack_unpack_fixmap(ptr);
     }
     else if(minipack_is_map16(ptr)) {
         *hdrsz = MAP16_HDRSIZE;
-        return (uint32_t)minipack_map16_read_count(ptr);
+        return (uint32_t)minipack_unpack_map16(ptr);
     }
     else if(minipack_is_map32(ptr)) {
         *hdrsz = MAP32_HDRSIZE;
-        return minipack_map32_read_count(ptr);
+        return minipack_unpack_map32(ptr);
     }
     else {
         *hdrsz = 0;
@@ -1392,19 +1392,19 @@ uint32_t minipack_map_read_hdr(void *ptr, size_t *hdrsz)
 // ptr   - A pointer to where the integer should be written to.
 // count - The number of elements in the map.
 // sz    - A pointer to where the total size of the element will be returned.
-void minipack_map_write_hdr(void *ptr, uint32_t count, size_t *sz)
+void minipack_pack_map(void *ptr, uint32_t count, size_t *sz)
 {
     if(count <= FIXMAP_MAXSIZE) {
         *sz = FIXMAP_HDRSIZE;
-        minipack_fixmap_write_hdr(ptr, (uint8_t)count);
+        minipack_pack_fixmap(ptr, (uint8_t)count);
     }
     else if(count <= MAP16_MAXSIZE) {
         *sz = MAP16_HDRSIZE;
-        minipack_map16_write_hdr(ptr, (uint16_t)count);
+        minipack_pack_map16(ptr, (uint16_t)count);
     }
     else if(count <= MAP32_MAXSIZE) {
         *sz = MAP32_HDRSIZE;
-        minipack_map32_write_hdr(ptr, count);
+        minipack_pack_map32(ptr, count);
     }
     else {
         *sz = 0;
@@ -1431,7 +1431,7 @@ bool minipack_is_fixmap(void *ptr)
 // ptr - A pointer to where the fix map should be read from.
 //
 // Returns the number of elements in the map.
-uint8_t minipack_fixmap_read_count(void *ptr)
+uint8_t minipack_unpack_fixmap(void *ptr)
 {
     return *((uint8_t*)ptr) & FIXMAP_VALUE_MASK;
 }
@@ -1440,7 +1440,7 @@ uint8_t minipack_fixmap_read_count(void *ptr)
 //
 // ptr   - A pointer to where the header should be written to.
 // count - The number of elements in the map.
-void minipack_fixmap_write_hdr(void *ptr, uint8_t count)
+void minipack_pack_fixmap(void *ptr, uint8_t count)
 {
     *((uint8_t*)ptr) = (count & FIXMAP_VALUE_MASK) | FIXMAP_TYPE;
 }
@@ -1465,7 +1465,7 @@ bool minipack_is_map16(void *ptr)
 // ptr - A pointer to where the map 16 should be read from.
 //
 // Returns the number of elements in the map.
-uint16_t minipack_map16_read_count(void *ptr)
+uint16_t minipack_unpack_map16(void *ptr)
 {
     return ntohs(*((uint16_t*)(ptr+1)));
 }
@@ -1473,7 +1473,7 @@ uint16_t minipack_map16_read_count(void *ptr)
 // Writes an map 16 header to a given memory address.
 //
 // ptr - A pointer to where the header should be written to.
-void minipack_map16_write_hdr(void *ptr, uint16_t count)
+void minipack_pack_map16(void *ptr, uint16_t count)
 {
     // Write header.
     *((uint8_t*)ptr)      = MAP16_TYPE;
@@ -1500,7 +1500,7 @@ bool minipack_is_map32(void *ptr)
 // ptr - A pointer to where the map 32 should be read from.
 //
 // Returns the number of elements in the map
-uint32_t minipack_map32_read_count(void *ptr)
+uint32_t minipack_unpack_map32(void *ptr)
 {
     return ntohl(*((uint32_t*)(ptr+1)));
 }
@@ -1508,7 +1508,7 @@ uint32_t minipack_map32_read_count(void *ptr)
 // Writes an map 32 header to a given memory address.
 //
 // ptr - A pointer to where the header should be written to.
-void minipack_map32_write_hdr(void *ptr, uint32_t count)
+void minipack_pack_map32(void *ptr, uint32_t count)
 {
     // Write header.
     *((uint8_t*)ptr)      = MAP32_TYPE;

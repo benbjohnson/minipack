@@ -10,21 +10,21 @@
 //
 //==============================================================================
 
-int test_map32_read_count() {
-    mu_assert(minipack_map32_read_count("\xDF\x00\x00\x00\x00") == 0);
-    mu_assert(minipack_map32_read_count("\xDF\x00\x00\x00\x05") == 5);
-    mu_assert(minipack_map32_read_count("\xDF\x00\x00\x01\x00") == 256);
+int test_map32_read() {
+    mu_assert(minipack_unpack_map32("\xDF\x00\x00\x00\x00") == 0);
+    mu_assert(minipack_unpack_map32("\xDF\x00\x00\x00\x05") == 5);
+    mu_assert(minipack_unpack_map32("\xDF\x00\x00\x01\x00") == 256);
     mu_assert_msgpack_map(65536, 5, "\xDF\x00\x01\x00\x00");
     return 0;
 }
 
-int test_map32_write_hdr() {
+int test_map32_write() {
     uint8_t data[] = {0x00, 0x00, 0x00, 0x00, 0x00};
 
-    minipack_map32_write_hdr(data, 0);
+    minipack_pack_map32(data, 0);
     mu_assert_mem(data, 5, "\xDF\x00\x00\x00\x00");
 
-    minipack_map32_write_hdr(data, 5);
+    minipack_pack_map32(data, 5);
     mu_assert_mem(data, 5, "\xDF\x00\x00\x00\x05");
 
     return 0;
@@ -38,8 +38,8 @@ int test_map32_write_hdr() {
 //==============================================================================
 
 int all_tests() {
-    mu_run_test(test_map32_read_count);
-    mu_run_test(test_map32_write_hdr);
+    mu_run_test(test_map32_read);
+    mu_run_test(test_map32_write);
     return 0;
 }
 

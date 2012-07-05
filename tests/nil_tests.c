@@ -19,7 +19,7 @@ int test_is_nil() {
 
 int test_nil_write() {
     uint8_t data[] = {0x00};
-    minipack_nil_write(data);
+    minipack_pack_nil(data);
     mu_assert_mem(data, 1, "\xC0");
     mu_assert_msgpack_nil(1, "\xC0");
     return 0;

@@ -17,13 +17,13 @@ int test_is_double() {
 }
 
 int test_double_read() {
-    mu_assert(minipack_double_read("\xCB\x00\x00\x00\x00\x00\x00\x00\x00") == 0);
+    mu_assert(minipack_unpack_double("\xCB\x00\x00\x00\x00\x00\x00\x00\x00") == 0);
     mu_assert_msgpack_double(0, 9, "\xCB\x00\x00\x00\x00\x00\x00\x00\x00");
-    mu_assert(minipack_double_read("\xCB\x40\x59\x00\x00\x00\x00\x00\x00") == 100);
+    mu_assert(minipack_unpack_double("\xCB\x40\x59\x00\x00\x00\x00\x00\x00") == 100);
     mu_assert_msgpack_double(100, 9, "\xCB\x40\x59\x00\x00\x00\x00\x00\x00");
-    mu_assert(minipack_double_read("\xCB\xC0\x59\x00\x00\x00\x00\x00\x00") == -100);
+    mu_assert(minipack_unpack_double("\xCB\xC0\x59\x00\x00\x00\x00\x00\x00") == -100);
     mu_assert_msgpack_double(-100, 9, "\xCB\xC0\x59\x00\x00\x00\x00\x00\x00");
-    double value = minipack_double_read("\xCB\x40\x59\x0C\xCC\xCC\xCC\xCC\xCD");      // = 100.2
+    double value = minipack_unpack_double("\xCB\x40\x59\x0C\xCC\xCC\xCC\xCC\xCD");      // = 100.2
     mu_assert_mem(&value, 8, "\xCD\xCC\xCC\xCC\xCC\x0C\x59\x40");
     mu_assert_msgpack_double(100.2, 9, "\xCB\x40\x59\x0C\xCC\xCC\xCC\xCC\xCD");
     return 0;
@@ -32,16 +32,16 @@ int test_double_read() {
 int test_double_write() {
     uint8_t data[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-    minipack_double_write(data, 0);
+    minipack_pack_double(data, 0);
     mu_assert_mem(data, 9, "\xCB\x00\x00\x00\x00\x00\x00\x00\x00");
 
-    minipack_double_write(data, 100);
+    minipack_pack_double(data, 100);
     mu_assert_mem(data, 9, "\xCB\x40\x59\x00\x00\x00\x00\x00\x00");
 
-    minipack_double_write(data, -100);
+    minipack_pack_double(data, -100);
     mu_assert_mem(data, 9, "\xCB\xC0\x59\x00\x00\x00\x00\x00\x00");
 
-    minipack_double_write(data, 100.2);
+    minipack_pack_double(data, 100.2);
     mu_assert_mem(data, 9, "\xCB\x40\x59\x0C\xCC\xCC\xCC\xCC\xCD");
 
     return 0;

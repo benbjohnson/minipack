@@ -10,21 +10,21 @@
 //
 //==============================================================================
 
-int test_array16_read_count() {
-    mu_assert(minipack_array16_read_count("\xDC\x00\x00") == 0);
-    mu_assert(minipack_array16_read_count("\xDC\x00\x05") == 5);
-    mu_assert(minipack_array16_read_count("\xDC\x01\x00") == 256);
+int test_array16_read() {
+    mu_assert(minipack_unpack_array16("\xDC\x00\x00") == 0);
+    mu_assert(minipack_unpack_array16("\xDC\x00\x05") == 5);
+    mu_assert(minipack_unpack_array16("\xDC\x01\x00") == 256);
     mu_assert_msgpack_array(256, 3, "\xDC\x01\00");
     return 0;
 }
 
-int test_array16_write_hdr() {
+int test_array16_write() {
     uint8_t data[] = {0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00};
 
-    minipack_array16_write_hdr(data, 0);
+    minipack_pack_array16(data, 0);
     mu_assert_mem(data, 3, "\xDC\x00\x00");
 
-    minipack_array16_write_hdr(data, 5);
+    minipack_pack_array16(data, 5);
     mu_assert_mem(data, 3, "\xDC\x00\x05");
 
     return 0;
@@ -38,8 +38,8 @@ int test_array16_write_hdr() {
 //==============================================================================
 
 int all_tests() {
-    mu_run_test(test_array16_read_count);
-    mu_run_test(test_array16_write_hdr);
+    mu_run_test(test_array16_read);
+    mu_run_test(test_array16_write);
     return 0;
 }
 
