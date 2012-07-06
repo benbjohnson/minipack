@@ -10,7 +10,7 @@
 //
 //==============================================================================
 
-#define TMPFILE "tmp/uint"
+#define TMPFILE "tmp/nil"
 
 #define mu_assert_fread_nil(FILENAME, SZ) do {\
     size_t sz; \

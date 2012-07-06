@@ -410,6 +410,7 @@ void minipack_pack_uint(void *ptr, uint64_t value, size_t *sz)
 // Returns the value read from the file stream.
 uint64_t minipack_fread_uint(FILE *file, size_t *sz)
 {
+    long pos = ftell(file);
     uint8_t data[BUFFER_SIZE];
     
     // If first byte cannot be read then exit.
@@ -417,23 +418,18 @@ uint64_t minipack_fread_uint(FILE *file, size_t *sz)
         *sz = 0;
         return 0;
     }
-    fseek(file, -1, SEEK_CUR);
+    fseek(file, pos, SEEK_SET);
 
     // Determine size of element based on type.
     size_t elemsz = minipack_sizeof_uint_elem(data);
 
-    // If element is not a uint then exit.
-    if(elemsz == 0) {
+    // If element is not a uint or we can't read enough bytes then exit.
+    if(elemsz == 0 || fread(data, elemsz, 1, file) != 1) {
+        fseek(file, pos, SEEK_SET);
         *sz = 0;
         return 0;
     }
 
-    // If we can't read enough bytes then exit.
-    if(fread(data, elemsz, 1, file) != 1) {
-        *sz = 0;
-        return 0;
-    }
-    
     // Parse and return value.
     return minipack_unpack_uint(data, sz);
 }
@@ -760,6 +756,7 @@ void minipack_pack_int(void *ptr, int64_t value, size_t *sz)
 // Returns the value read from the file stream.
 int64_t minipack_fread_int(FILE *file, size_t *sz)
 {
+    long pos = ftell(file);
     uint8_t data[BUFFER_SIZE];
     
     // If first byte cannot be read then exit.
@@ -767,23 +764,18 @@ int64_t minipack_fread_int(FILE *file, size_t *sz)
         *sz = 0;
         return 0;
     }
-    fseek(file, -1, SEEK_CUR);
+    fseek(file, pos, SEEK_SET);
 
     // Determine size of element based on type.
     size_t elemsz = minipack_sizeof_int_elem(data);
 
-    // If element is not a int then exit.
-    if(elemsz == 0) {
+    // If element is not a int or we can't read enough bytes then exit.
+    if(elemsz == 0 || fread(data, elemsz, 1, file) != 1) {
+        fseek(file, pos, SEEK_SET);
         *sz = 0;
         return 0;
     }
 
-    // If we can't read enough bytes then exit.
-    if(fread(data, elemsz, 1, file) != 1) {
-        *sz = 0;
-        return 0;
-    }
-    
     // Parse and return value.
     return minipack_unpack_int(data, sz);
 }
@@ -1012,20 +1004,17 @@ void minipack_pack_nil(void *ptr, size_t *sz)
 // sz   - The number of bytes read from the stream.
 void minipack_fread_nil(FILE *file, size_t *sz)
 {
+    long pos = ftell(file);
     uint8_t data[NIL_SIZE];
     
     // If element cannot be read then exit.
-    if(fread(data, NIL_SIZE, 1, file) != 1) {
+    if(fread(data, NIL_SIZE, 1, file) != 1 || !minipack_is_nil(data)) {
+        fseek(file, pos, SEEK_SET);
         *sz = 0;
+        return;
     }
-    // Or if the element is not a nil then rewind and exit.
-    else if(!minipack_is_nil(data)) {
-        fseek(file, -NIL_SIZE, SEEK_CUR);
-        *sz = 0;
-    }
-    else {
-        minipack_unpack_nil(data, sz);
-    }
+
+    minipack_unpack_nil(data, sz);
 }
 
 // Packs and writes a nil to a file stream.
@@ -1127,6 +1116,51 @@ void minipack_pack_bool(void *ptr, bool value, size_t *sz)
     }
 }
 
+// Reads and unpacks a boolean from a file stream. If the element at the
+// current location is not a boolean then the sz is returned as 0.
+//
+// file - The file stream.
+// sz   - The number of bytes read from the stream.
+//
+// Returns the value read from the stream.
+bool minipack_fread_bool(FILE *file, size_t *sz)
+{
+    long pos = ftell(file);
+    uint8_t data[BOOL_SIZE];
+    
+    // If element cannot be read then exit.
+    if(fread(data, BOOL_SIZE, 1, file) != 1 || !minipack_is_bool(data)) {
+        fseek(file, pos, SEEK_SET);
+        *sz = 0;
+        return false;
+    }
+
+    return minipack_unpack_bool(data, sz);
+}
+
+// Packs and writes a boolean to a file stream.
+//
+// file  - The file stream.
+// value - The value to write to the stream.
+// sz    - The number of bytes written to the stream.
+//
+// Returns 0 if successful, otherwise returns -1.
+int minipack_fwrite_bool(FILE *file, bool value, size_t *sz)
+{
+    uint8_t data[BOOL_SIZE];
+
+    // Pack the value.
+    minipack_pack_bool(data, value, sz);
+    
+    // If the data cannot be written to file then return an error.
+    if(fwrite(data, *sz, 1, file) != 1) {
+        *sz = 0;
+        return -1;
+    }
+    
+    return 0;
+}
+
 
 //==============================================================================
 //
@@ -1173,6 +1207,51 @@ void minipack_pack_float(void *ptr, float value, size_t *sz)
     uint32_t bytes = htonl(*((uint32_t*)&value));
     *((uint8_t*)ptr)   = FLOAT_TYPE;
     *((float*)(ptr+1)) = *((float*)&bytes);
+}
+
+// Reads and unpacks a float from a file stream. If the element at the
+// current location is not a float then the sz is returned as 0.
+//
+// file - The file stream.
+// sz   - The number of bytes read from the stream.
+//
+// Returns the value read from the stream.
+float minipack_fread_float(FILE *file, size_t *sz)
+{
+    long pos = ftell(file);
+    uint8_t data[FLOAT_SIZE];
+    
+    // If element cannot be read or element is not a float then exit.
+    if(fread(data, FLOAT_SIZE, 1, file) != 1 || !minipack_is_float(data)) {
+        fseek(file, pos, SEEK_SET);
+        *sz = 0;
+        return false;
+    }
+
+    return minipack_unpack_float(data, sz);
+}
+
+// Packs and writes a float to a file stream.
+//
+// file  - The file stream.
+// value - The value to write to the stream.
+// sz    - The number of bytes written to the stream.
+//
+// Returns 0 if successful, otherwise returns -1.
+int minipack_fwrite_float(FILE *file, float value, size_t *sz)
+{
+    uint8_t data[FLOAT_SIZE];
+
+    // Pack the value.
+    minipack_pack_float(data, value, sz);
+    
+    // If the data cannot be written to file then return an error.
+    if(fwrite(data, *sz, 1, file) != 1) {
+        *sz = 0;
+        return -1;
+    }
+    
+    return 0;
 }
 
 

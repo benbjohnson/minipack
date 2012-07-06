@@ -212,6 +212,10 @@ bool minipack_unpack_bool(void *ptr, size_t *sz);
 
 void minipack_pack_bool(void *ptr, bool value, size_t *sz);
 
+bool minipack_fread_bool(FILE *file, size_t *sz);
+
+int minipack_fwrite_bool(FILE *file, bool value, size_t *sz);
+
 
 //==============================================================================
 //
@@ -228,6 +232,10 @@ bool minipack_is_float(void *ptr);
 float minipack_unpack_float(void *ptr, size_t *sz);
 
 void minipack_pack_float(void *ptr, float value, size_t *sz);
+
+float minipack_fread_float(FILE *file, size_t *sz);
+
+int minipack_fwrite_float(FILE *file, float value, size_t *sz);
 
 
 //======================================
