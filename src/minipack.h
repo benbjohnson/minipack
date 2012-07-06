@@ -385,9 +385,15 @@ bool minipack_is_map(void *ptr);
 
 size_t minipack_sizeof_map(uint32_t count);
 
+size_t minipack_sizeof_map_elem(void *ptr);
+
 uint32_t minipack_unpack_map(void *ptr, size_t *sz);
 
 void minipack_pack_map(void *ptr, uint32_t count, size_t *sz);
+
+uint32_t minipack_fread_map(FILE *file, size_t *sz);
+
+int minipack_fwrite_map(FILE *file, uint32_t length, size_t *sz);
 
 
 //======================================

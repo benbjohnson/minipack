@@ -1927,6 +1927,28 @@ size_t minipack_sizeof_map(uint32_t count)
     return 0;
 }
 
+// Retrieves the size, in bytes, of how large the element at the given address
+// will be.
+//
+// ptr - A pointer where the element is.
+//
+// Returns the number of bytes needed for the element.
+size_t minipack_sizeof_map_elem(void *ptr)
+{
+    if(minipack_is_fixmap(ptr)) {
+        return FIXMAP_SIZE;
+    }
+    else if(minipack_is_map16(ptr)) {
+        return MAP16_SIZE;
+    }
+    else if(minipack_is_map32(ptr)) {
+        return MAP32_SIZE;
+    }
+    else {
+        return 0;
+    }
+}
+
 // Reads the header for an map from a given memory address.
 //
 // ptr - A pointer to where the map header should be read from.
@@ -1969,6 +1991,61 @@ void minipack_pack_map(void *ptr, uint32_t count, size_t *sz)
     else {
         *sz = 0;
     }
+}
+
+// Reads and unpacks a map element from a file stream. If the element at
+// the current location is a map element then the sz is returned as 0.
+//
+// file - The file stream.
+// sz   - The number of bytes read from the stream.
+//
+// Returns the item count of the map from the file stream.
+uint32_t minipack_fread_map(FILE *file, size_t *sz)
+{
+    long pos = ftell(file);
+    uint8_t data[MAP32_SIZE];
+    
+    // If first byte cannot be read then exit.
+    if(fread(data, sizeof(uint8_t), 1, file) != 1) {
+        *sz = 0;
+        return 0;
+    }
+    fseek(file, pos, SEEK_SET);
+
+    // Determine size of element based on type.
+    size_t elemsz = minipack_sizeof_map_elem(data);
+
+    // If element is not a map or we can't read enough bytes then exit.
+    if(elemsz == 0 || fread(data, elemsz, 1, file) != 1) {
+        fseek(file, pos, SEEK_SET);
+        *sz = 0;
+        return 0;
+    }
+
+    // Parse and return value.
+    return minipack_unpack_map(data, sz);
+}
+
+// Packs and writes an map element to a file stream.
+//
+// file - The file stream.
+// sz   - The number of bytes written to the stream.
+//
+// Returns 0 if successful, otherwise returns -1.
+int minipack_fwrite_map(FILE *file, uint32_t length, size_t *sz)
+{
+    uint8_t data[MAP32_SIZE];
+
+    // Pack the element.
+    minipack_pack_map(data, length, sz);
+    
+    // If the data cannot be written to file then return an error.
+    if(fwrite(data, *sz, 1, file) != 1) {
+        *sz = 0;
+        return -1;
+    }
+    
+    return 0;
 }
 
 
