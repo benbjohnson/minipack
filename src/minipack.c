@@ -1296,6 +1296,51 @@ void minipack_pack_double(void *ptr, double value, size_t *sz)
     *((double*)(ptr+1)) = *((double*)&bytes);
 }
 
+// Reads and unpacks a double from a file stream. If the element at the
+// current location is not a double then the sz is returned as 0.
+//
+// file - The file stream.
+// sz   - The number of bytes read from the stream.
+//
+// Returns the value read from the stream.
+double minipack_fread_double(FILE *file, size_t *sz)
+{
+    long pos = ftell(file);
+    uint8_t data[DOUBLE_SIZE];
+    
+    // If element cannot be read or element is not a double then exit.
+    if(fread(data, DOUBLE_SIZE, 1, file) != 1 || !minipack_is_double(data)) {
+        fseek(file, pos, SEEK_SET);
+        *sz = 0;
+        return false;
+    }
+
+    return minipack_unpack_double(data, sz);
+}
+
+// Packs and writes a double to a file stream.
+//
+// file  - The file stream.
+// value - The value to write to the stream.
+// sz    - The number of bytes written to the stream.
+//
+// Returns 0 if successful, otherwise returns -1.
+int minipack_fwrite_double(FILE *file, double value, size_t *sz)
+{
+    uint8_t data[DOUBLE_SIZE];
+
+    // Pack the value.
+    minipack_pack_double(data, value, sz);
+    
+    // If the data cannot be written to file then return an error.
+    if(fwrite(data, *sz, 1, file) != 1) {
+        *sz = 0;
+        return -1;
+    }
+    
+    return 0;
+}
+
 
 
 //==============================================================================

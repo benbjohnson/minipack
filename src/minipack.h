@@ -248,6 +248,9 @@ double minipack_unpack_double(void *ptr, size_t *sz);
 
 void minipack_pack_double(void *ptr, double value, size_t *sz);
 
+double minipack_fread_double(FILE *file, size_t *sz);
+
+int minipack_fwrite_double(FILE *file, double value, size_t *sz);
 
 
 //==============================================================================
