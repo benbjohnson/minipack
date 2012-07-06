@@ -2,6 +2,8 @@
 # Variables
 ################################################################################
 
+VERSION=0.3.0
+
 CFLAGS=-g -Wall -Wextra -std=c99 -D_FILE_OFFSET_BITS=64 -lmsgpack
 
 SOURCES=src/minipack.c
@@ -9,6 +11,7 @@ OBJECTS=bin/minipack.o
 TEST_SOURCES=$(wildcard tests/*_tests.c)
 TEST_OBJECTS=$(patsubst %.c,%,${TEST_SOURCES})
 
+PACKAGE=pkg/minipack-${VERSION}.tar.gz
 
 ################################################################################
 # Default Target
@@ -41,6 +44,20 @@ build/tests:
 
 $(TEST_OBJECTS): %: %.c ${OBJECTS}
 	$(CC) $(CFLAGS) -Isrc -o $@ $< ${OBJECTS}
+
+
+################################################################################
+# Package
+################################################################################
+
+package:
+	rm -rf pkg
+	mkdir -p pkg/tmp/minipack
+	echo "// minipack v${VERSION}\n" > pkg/header
+	cat pkg/header src/minipack.h > pkg/tmp/minipack/minipack.h
+	cat pkg/header src/minipack.c > pkg/tmp/minipack/minipack.c
+	tar czvf ${PACKAGE} -C pkg/tmp .
+	rm -rf pkg/header pkg/tmp
 
 
 ################################################################################
