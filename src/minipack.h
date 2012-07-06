@@ -56,6 +56,8 @@ void minipack_pack_uint(void *ptr, uint64_t value, size_t *sz);
 
 uint64_t minipack_fread_uint(FILE *file, size_t *sz);
 
+int minipack_fwrite_uint(FILE *file, uint64_t value, size_t *sz);
+
 
 //======================================
 // Unsigned Int (8-bit)

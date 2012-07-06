@@ -410,7 +410,6 @@ void minipack_pack_uint(void *ptr, uint64_t value, size_t *sz)
 // Returns the value read from the file stream.
 uint64_t minipack_fread_uint(FILE *file, size_t *sz)
 {
-    // Create the largest buffer needed.
     uint8_t data[BUFFER_SIZE];
     
     // If first byte cannot be read then exit.
@@ -430,7 +429,7 @@ uint64_t minipack_fread_uint(FILE *file, size_t *sz)
     }
 
     // If we can't read enough bytes then exit.
-    if(fread(data, sizeof(uint8_t), elemsz, file) != elemsz) {
+    if(fread(data, elemsz, 1, file) != 1) {
         *sz = 0;
         return 0;
     }
@@ -439,6 +438,27 @@ uint64_t minipack_fread_uint(FILE *file, size_t *sz)
     return minipack_unpack_uint(data, sz);
 }
 
+// Packs and writes an unsigned int to a file stream.
+//
+// file - The file stream.
+// sz   - The number of bytes written to the stream.
+//
+// Returns 0 if successful, otherwise returns -1.
+int minipack_fwrite_uint(FILE *file, uint64_t value, size_t *sz)
+{
+    uint8_t data[BUFFER_SIZE];
+
+    // Pack the value.
+    minipack_pack_uint(data, value, sz);
+    
+    // If the data cannot be written to file then return an error.
+    if(fwrite(data, *sz, 1, file) != 1) {
+        *sz = 0;
+        return -1;
+    }
+    
+    return 0;
+}
 
 
 //--------------------------------------

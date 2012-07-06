@@ -68,6 +68,34 @@ int tests_run;
 
 //==============================================================================
 //
+// File
+//
+//==============================================================================
+
+// Asserts that two files are identifical.
+#define mu_assert_file(FILENAME1, FILENAME2) do {\
+    unsigned char ch1, ch2; \
+    FILE *file1 = fopen(FILENAME1, "r"); \
+    FILE *file2 = fopen(FILENAME2, "r"); \
+    if(file1 == NULL) mu_fail("Cannot open file 1: %s", FILENAME1); \
+    if(file2 == NULL) mu_fail("Cannot open file 2: %s", FILENAME2); \
+    while(1) { \
+        fread(&ch2, 1, 1, file2); \
+        fread(&ch1, 1, 1, file1); \
+        if(feof(file2) || feof(file1)) break; \
+        if(ch1 != ch2) { \
+            mu_fail("Expected 0x%02x (%s), received 0x%02x (%s) at location %ld", ch2, FILENAME2, ch1, FILENAME1, (ftell(file2)-1)); \
+        } \
+    } \
+    if(!feof(file1)) mu_fail("Expected file length longer than expected: %s", FILENAME2); \
+    if(!feof(file2)) mu_fail("Expected file length shorter than expected: %s", FILENAME2); \
+    fclose(file1); \
+    fclose(file2); \
+} while(0)
+
+
+//==============================================================================
+//
 // Msgpakc
 //
 //==============================================================================
