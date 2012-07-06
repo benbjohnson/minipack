@@ -3,6 +3,26 @@
 
 #include "memdump.h"
 
+
+//==============================================================================
+//
+// Helpers
+//
+//==============================================================================
+
+#define mu_assert_fread_uint(FILENAME, VALUE, SZ) do {\
+    size_t sz; \
+    FILE *file = fopen(FILENAME, "r"); \
+    long pos = ftell(file); \
+    if(file == NULL) mu_fail("Cannot open file: %s", FILENAME); \
+    uint64_t value = minipack_fread_uint(file, &sz); \
+    mu_assert_with_msg(sz == SZ, "Unexpected size: %ld", sz); \
+    mu_assert_with_msg(value == VALUE, "Unexpected value: %lld", value); \
+    mu_assert_with_msg(pos+SZ == ftell(file), "Unexpected file position: %ld", ftell(file)); \
+    fclose(file); \
+} while(0)
+
+
 //==============================================================================
 //
 // Test Cases
@@ -87,6 +107,37 @@ int test_pack_uint() {
     return 0;
 }
 
+int test_fread_uint() {
+    // Fixnum
+    mu_assert_fread_uint("tests/fixtures/fixnum/0", 0, 1);
+    mu_assert_fread_uint("tests/fixtures/fixnum/127", 127, 1);
+
+    // 8-bit
+    mu_assert_fread_uint("tests/fixtures/uint/128", 128, 2);
+    mu_assert_fread_uint("tests/fixtures/uint/255", 255, 2);
+
+    // 16-bit
+    mu_assert_fread_uint("tests/fixtures/uint/256", 256, 3);
+    mu_assert_fread_uint("tests/fixtures/uint/65535", 65535, 3);
+
+    // 32-bit
+    mu_assert_fread_uint("tests/fixtures/uint/65536", 65536, 5);
+    mu_assert_fread_uint("tests/fixtures/uint/4294967295", 4294967295, 5);
+
+    // 64-bit
+    mu_assert_fread_uint("tests/fixtures/uint/4294967296", 4294967296, 9);
+
+    // ERR: Negative fixnum
+    mu_assert_fread_uint("tests/fixtures/fixnum/-1", 0, 0);
+
+    // ERR: Signed ints
+    mu_assert_fread_uint("tests/fixtures/fixnum/-1", 0, 0);
+    mu_assert_fread_uint("tests/fixtures/fixnum/-32", 0, 0);
+    mu_assert_fread_uint("tests/fixtures/int/127", 0, 0);
+    mu_assert_fread_uint("tests/fixtures/int/-128", 0, 0);
+
+    return 0;
+}
 
 //==============================================================================
 //
@@ -97,6 +148,7 @@ int test_pack_uint() {
 int all_tests() {
     mu_run_test(test_unpack_uint);
     mu_run_test(test_pack_uint);
+    mu_run_test(test_fread_uint);
     return 0;
 }
 

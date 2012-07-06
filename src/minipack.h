@@ -3,9 +3,10 @@
 #ifndef _minipack_h
 #define _minipack_h
 
+#include <stdio.h>
+#include <stddef.h>
 #include <inttypes.h>
 #include <stdbool.h>
-#include <stddef.h>
 
 
 //==============================================================================
@@ -47,9 +48,13 @@ void minipack_pack_neg_fixnum(void *ptr, int8_t value, size_t *sz);
 
 size_t minipack_sizeof_uint(uint64_t value);
 
+size_t minipack_sizeof_uint_elem(void *ptr);
+
 uint64_t minipack_unpack_uint(void *ptr, size_t *sz);
 
 void minipack_pack_uint(void *ptr, uint64_t value, size_t *sz);
+
+uint64_t minipack_fread_uint(FILE *file, size_t *sz);
 
 
 //======================================
@@ -381,6 +386,7 @@ bool minipack_is_map32(void *ptr);
 uint32_t minipack_unpack_map32(void *ptr, size_t *sz);
 
 void minipack_pack_map32(void *ptr, uint32_t count, size_t *sz);
+
 
 
 #endif

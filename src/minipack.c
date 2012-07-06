@@ -10,6 +10,14 @@
 //==============================================================================
 
 //--------------------------------------
+// General
+//--------------------------------------
+
+// The largest buffer size needed to read an element.
+#define BUFFER_SIZE             9
+
+
+//--------------------------------------
 // Fixnum
 //--------------------------------------
 
@@ -309,6 +317,34 @@ size_t minipack_sizeof_uint(uint64_t value)
     return 0;
 }
 
+// Retrieves the size, in bytes, of how large the element at the given address
+// will be.
+//
+// ptr - A pointer where the element is.
+//
+// Returns the number of bytes needed for the element.
+size_t minipack_sizeof_uint_elem(void *ptr)
+{
+    if(minipack_is_pos_fixnum(ptr)) {
+        return POS_FIXNUM_SIZE;
+    }
+    else if(minipack_is_uint8(ptr)) {
+        return UINT8_SIZE;
+    }
+    else if(minipack_is_uint16(ptr)) {
+        return UINT16_SIZE;
+    }
+    else if(minipack_is_uint32(ptr)) {
+        return UINT32_SIZE;
+    }
+    else if(minipack_is_uint64(ptr)) {
+        return UINT64_SIZE;
+    }
+    else {
+        return 0;
+    }
+}
+
 // Reads an unsigned integer from a given memory address.
 //
 // ptr - A pointer to where the unsigned int should be read from.
@@ -324,15 +360,12 @@ uint64_t minipack_unpack_uint(void *ptr, size_t *sz)
         return (uint64_t)minipack_unpack_uint8(ptr, sz);
     }
     else if(minipack_is_uint16(ptr)) {
-        *sz = UINT16_SIZE;
         return (uint64_t)minipack_unpack_uint16(ptr, sz);
     }
     else if(minipack_is_uint32(ptr)) {
-        *sz = UINT32_SIZE;
         return (uint64_t)minipack_unpack_uint32(ptr, sz);
     }
     else if(minipack_is_uint64(ptr)) {
-        *sz = UINT64_SIZE;
         return minipack_unpack_uint64(ptr, sz);
     }
     else {
@@ -367,6 +400,45 @@ void minipack_pack_uint(void *ptr, uint64_t value, size_t *sz)
         *sz = 0;
     }
 }
+
+// Reads and unpacks an unsigned int from a file stream. If the element at the
+// current location is not an unsigned int then the sz is returned as 0.
+//
+// file - The file stream.
+// sz   - The number of bytes read from the stream.
+//
+// Returns the value read from the file stream.
+uint64_t minipack_fread_uint(FILE *file, size_t *sz)
+{
+    // Create the largest buffer needed.
+    uint8_t data[BUFFER_SIZE];
+    
+    // If first byte cannot be read then exit.
+    if(fread(data, sizeof(uint8_t), 1, file) != 1) {
+        *sz = 0;
+        return 0;
+    }
+    fseek(file, -1, SEEK_CUR);
+
+    // Determine size of element based on type.
+    size_t elemsz = minipack_sizeof_uint_elem(data);
+
+    // If element is not a uint then exit.
+    if(elemsz == 0) {
+        *sz = 0;
+        return 0;
+    }
+
+    // If we can't read enough bytes then exit.
+    if(fread(data, sizeof(uint8_t), elemsz, file) != elemsz) {
+        *sz = 0;
+        return 0;
+    }
+    
+    // Parse and return value.
+    return minipack_unpack_uint(data, sz);
+}
+
 
 
 //--------------------------------------
