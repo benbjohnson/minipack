@@ -1,4 +1,4 @@
-// minipack v0.2.0
+// minipack v0.3.0
 
 #include "minipack.h"
 #include "string.h"
