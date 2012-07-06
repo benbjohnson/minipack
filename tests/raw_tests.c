@@ -7,6 +7,39 @@
 
 //==============================================================================
 //
+// Helpers
+//
+//==============================================================================
+
+#define TMPFILE "tmp/raw"
+
+#define mu_assert_fread_raw(FILENAME, VALUE, SZ) do {\
+    size_t sz; \
+    FILE *file = fopen(FILENAME, "r"); \
+    if(file == NULL) mu_fail("Cannot open file: %s", FILENAME); \
+    long pos = ftell(file); \
+    uint32_t value = minipack_fread_raw(file, &sz); \
+    mu_assert_with_msg(sz == SZ, "Unexpected size: %ld", sz); \
+    mu_assert_with_msg(value == VALUE, "Unexpected value: %d", value); \
+    mu_assert_with_msg(pos+SZ == ftell(file), "Unexpected file position: %ld", ftell(file)); \
+    fclose(file); \
+} while(0)
+
+#define mu_assert_fwrite_raw(FILENAME, VALUE, SZ, RC) do {\
+    size_t sz; \
+    FILE *file = fopen(TMPFILE, "w"); \
+    if(file == NULL) mu_fail("Cannot open temp file: %s", TMPFILE); \
+    long pos = ftell(file); \
+    int rc = minipack_fwrite_raw(file, VALUE, &sz); \
+    mu_assert_with_msg(rc == RC, "Unexpected return value: %d", rc); \
+    mu_assert_with_msg(sz == SZ, "Unexpected size: %ld", sz); \
+    mu_assert_with_msg(pos+SZ == ftell(file), "Unexpected file position: %ld", ftell(file)); \
+    mu_assert_file(TMPFILE, FILENAME); \
+    fclose(file); \
+} while(0)
+
+//==============================================================================
+//
 // Test Cases
 //
 //==============================================================================
@@ -32,16 +65,16 @@ int test_is_raw() {
 
 int test_raw_sizeof() {
     // Fix raw
-    mu_assert(minipack_raw_sizeof(0) == 1);
-    mu_assert(minipack_raw_sizeof(31) == 1);
+    mu_assert(minipack_sizeof_raw(0) == 1);
+    mu_assert(minipack_sizeof_raw(31) == 1);
 
     // raw16
-    mu_assert(minipack_raw_sizeof(32) == 3);
-    mu_assert(minipack_raw_sizeof(65535) == 3);
+    mu_assert(minipack_sizeof_raw(32) == 3);
+    mu_assert(minipack_sizeof_raw(65535) == 3);
 
     // raw32
-    mu_assert(minipack_raw_sizeof(65536) == 5);
-    mu_assert(minipack_raw_sizeof(4294967295) == 5);
+    mu_assert(minipack_sizeof_raw(65536) == 5);
+    mu_assert(minipack_sizeof_raw(4294967295) == 5);
 
     return 0;
 }
@@ -100,6 +133,43 @@ int test_pack_raw() {
     return 0;
 }
 
+int test_fread_raw() {
+    // fixraw
+    mu_assert_fread_raw("tests/fixtures/raw/0", 0, 1);
+    mu_assert_fread_raw("tests/fixtures/raw/31", 31, 1);
+
+    // raw16
+    mu_assert_fread_raw("tests/fixtures/raw/32", 32, 3);
+    mu_assert_fread_raw("tests/fixtures/raw/65535", 65535, 3);
+
+    // raw32
+    mu_assert_fread_raw("tests/fixtures/raw/65536", 65536, 5);
+    mu_assert_fread_raw("tests/fixtures/raw/4294967295", 4294967295, 5);
+
+    // ERR
+    mu_assert_fread_raw("tests/fixtures/fixnum/-1", 0, 0);
+    mu_assert_fread_raw("tests/fixtures/fixnum/-32", 0, 0);
+    mu_assert_fread_raw("tests/fixtures/int/127", 0, 0);
+    mu_assert_fread_raw("tests/fixtures/int/-128", 0, 0);
+
+    return 0;
+}
+
+int test_fwrite_raw() {
+    // fixraw
+    mu_assert_fwrite_raw("tests/fixtures/raw/0", 0, 1, 0);
+    mu_assert_fwrite_raw("tests/fixtures/raw/31", 31, 1, 0);
+
+    // raw16
+    mu_assert_fwrite_raw("tests/fixtures/raw/32", 32, 3, 0);
+    mu_assert_fwrite_raw("tests/fixtures/raw/65535", 65535, 3, 0);
+
+    // raw32
+    mu_assert_fwrite_raw("tests/fixtures/raw/65536", 65536, 5, 0);
+    mu_assert_fwrite_raw("tests/fixtures/raw/4294967295", 4294967295, 5, 0);
+
+    return 0;
+}
 
 //==============================================================================
 //
@@ -112,6 +182,8 @@ int all_tests() {
     mu_run_test(test_raw_sizeof);
     mu_run_test(test_unpack_raw);
     mu_run_test(test_pack_raw);
+    mu_run_test(test_fread_raw);
+    mu_run_test(test_fwrite_raw);
     return 0;
 }
 

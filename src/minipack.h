@@ -265,11 +265,17 @@ int minipack_fwrite_double(FILE *file, double value, size_t *sz);
 
 bool minipack_is_raw(void *ptr);
 
-size_t minipack_raw_sizeof(uint32_t length);
+size_t minipack_sizeof_raw(uint32_t length);
+
+size_t minipack_sizeof_raw_elem(void *ptr);
 
 uint32_t minipack_unpack_raw(void *ptr, size_t *sz);
 
 void minipack_pack_raw(void *ptr, uint32_t length, size_t *sz);
+
+uint32_t minipack_fread_raw(FILE *file, size_t *sz);
+
+int minipack_fwrite_raw(FILE *file, uint32_t length, size_t *sz);
 
 
 //======================================
@@ -318,7 +324,7 @@ void minipack_pack_raw32(void *ptr, uint32_t length, size_t *sz);
 
 bool minipack_is_array(void *ptr);
 
-size_t minipack_array_sizeof(uint32_t count);
+size_t minipack_sizeof_array(uint32_t count);
 
 uint32_t minipack_unpack_array(void *ptr, size_t *sz);
 
@@ -371,7 +377,7 @@ void minipack_pack_array32(void *ptr, uint32_t count, size_t *sz);
 
 bool minipack_is_map(void *ptr);
 
-size_t minipack_map_sizeof(uint32_t count);
+size_t minipack_sizeof_map(uint32_t count);
 
 uint32_t minipack_unpack_map(void *ptr, size_t *sz);
 

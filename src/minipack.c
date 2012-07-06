@@ -1368,7 +1368,7 @@ bool minipack_is_raw(void *ptr)
 // length - The length of the raw bytes.
 //
 // Returns the number of bytes needed for the header.
-size_t minipack_raw_sizeof(uint32_t length)
+size_t minipack_sizeof_raw(uint32_t length)
 {
     if(length <= FIXRAW_MAXSIZE) {
         return FIXRAW_SIZE;
@@ -1381,6 +1381,28 @@ size_t minipack_raw_sizeof(uint32_t length)
     }
 
     return 0;
+}
+
+// Retrieves the size, in bytes, of how large the element at the given address
+// will be.
+//
+// ptr - A pointer where the element is.
+//
+// Returns the number of bytes needed for the element.
+size_t minipack_sizeof_raw_elem(void *ptr)
+{
+    if(minipack_is_fixraw(ptr)) {
+        return FIXRAW_SIZE;
+    }
+    else if(minipack_is_raw16(ptr)) {
+        return RAW16_SIZE;
+    }
+    else if(minipack_is_raw32(ptr)) {
+        return RAW32_SIZE;
+    }
+    else {
+        return 0;
+    }
 }
 
 // Reads the header for raw bytes from a given memory address.
@@ -1425,6 +1447,61 @@ void minipack_pack_raw(void *ptr, uint32_t length, size_t *sz)
     else {
         *sz = 0;
     }
+}
+
+// Reads and unpacks a raw bytes element from a file stream. If the element at
+// the current location is a raw bytes element then the sz is returned as 0.
+//
+// file - The file stream.
+// sz   - The number of bytes read from the stream.
+//
+// Returns the length of the raw bytes from the file stream.
+uint32_t minipack_fread_raw(FILE *file, size_t *sz)
+{
+    long pos = ftell(file);
+    uint8_t data[RAW32_SIZE];
+    
+    // If first byte cannot be read then exit.
+    if(fread(data, sizeof(uint8_t), 1, file) != 1) {
+        *sz = 0;
+        return 0;
+    }
+    fseek(file, pos, SEEK_SET);
+
+    // Determine size of element based on type.
+    size_t elemsz = minipack_sizeof_raw_elem(data);
+
+    // If element is not a raw or we can't read enough bytes then exit.
+    if(elemsz == 0 || fread(data, elemsz, 1, file) != 1) {
+        fseek(file, pos, SEEK_SET);
+        *sz = 0;
+        return 0;
+    }
+
+    // Parse and return value.
+    return minipack_unpack_raw(data, sz);
+}
+
+// Packs and writes a raw bytes element to a file stream.
+//
+// file - The file stream.
+// sz   - The number of bytes written to the stream.
+//
+// Returns 0 if successful, otherwise returns -1.
+int minipack_fwrite_raw(FILE *file, uint32_t length, size_t *sz)
+{
+    uint8_t data[RAW32_SIZE];
+
+    // Pack the element.
+    minipack_pack_raw(data, length, sz);
+    
+    // If the data cannot be written to file then return an error.
+    if(fwrite(data, *sz, 1, file) != 1) {
+        *sz = 0;
+        return -1;
+    }
+    
+    return 0;
 }
 
 
@@ -1561,7 +1638,7 @@ bool minipack_is_array(void *ptr)
 // count - The number of elements in the array.
 //
 // Returns the number of bytes needed for the header.
-size_t minipack_array_sizeof(uint32_t count)
+size_t minipack_sizeof_array(uint32_t count)
 {
     if(count <= FIXARRAY_MAXSIZE) {
         return FIXARRAY_SIZE;
@@ -1758,7 +1835,7 @@ bool minipack_is_map(void *ptr)
 // count - The number of elements in the map.
 //
 // Returns the number of bytes needed for the header.
-size_t minipack_map_sizeof(uint32_t count)
+size_t minipack_sizeof_map(uint32_t count)
 {
     if(count <= FIXMAP_MAXSIZE) {
         return FIXMAP_SIZE;
