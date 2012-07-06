@@ -187,6 +187,10 @@ void minipack_pack_nil(void *ptr, size_t *sz);
 
 void minipack_unpack_nil(void *ptr, size_t *sz);
 
+void minipack_fread_nil(FILE *file, size_t *sz);
+
+int minipack_fwrite_nil(FILE *file, size_t *sz);
+
 
 //==============================================================================
 //

@@ -1005,6 +1005,51 @@ void minipack_pack_nil(void *ptr, size_t *sz)
     *((uint8_t*)ptr) = NIL_TYPE;
 }
 
+// Reads and unpacks a nil from a file stream. If the element at the
+// current location is not a nil then the sz is returned as 0.
+//
+// file - The file stream.
+// sz   - The number of bytes read from the stream.
+void minipack_fread_nil(FILE *file, size_t *sz)
+{
+    uint8_t data[NIL_SIZE];
+    
+    // If element cannot be read then exit.
+    if(fread(data, NIL_SIZE, 1, file) != 1) {
+        *sz = 0;
+    }
+    // Or if the element is not a nil then rewind and exit.
+    else if(!minipack_is_nil(data)) {
+        fseek(file, -NIL_SIZE, SEEK_CUR);
+        *sz = 0;
+    }
+    else {
+        minipack_unpack_nil(data, sz);
+    }
+}
+
+// Packs and writes a nil to a file stream.
+//
+// file - The file stream.
+// sz   - The number of bytes written to the stream.
+//
+// Returns 0 if successful, otherwise returns -1.
+int minipack_fwrite_nil(FILE *file, size_t *sz)
+{
+    uint8_t data[NIL_SIZE];
+
+    // Pack the value.
+    minipack_pack_nil(data, sz);
+    
+    // If the data cannot be written to file then return an error.
+    if(fwrite(data, *sz, 1, file) != 1) {
+        *sz = 0;
+        return -1;
+    }
+    
+    return 0;
+}
+
 
 //==============================================================================
 //
