@@ -326,9 +326,15 @@ bool minipack_is_array(void *ptr);
 
 size_t minipack_sizeof_array(uint32_t count);
 
+size_t minipack_sizeof_array_elem(void *ptr);
+
 uint32_t minipack_unpack_array(void *ptr, size_t *sz);
 
 void minipack_pack_array(void *ptr, uint32_t count, size_t *sz);
+
+uint32_t minipack_fread_array(FILE *file, size_t *sz);
+
+int minipack_fwrite_array(FILE *file, uint32_t length, size_t *sz);
 
 
 //======================================
