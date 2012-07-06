@@ -116,9 +116,15 @@ void minipack_pack_uint64(void *ptr, uint64_t value, size_t *sz);
 
 size_t minipack_int_sizeof(int64_t value);
 
+size_t minipack_sizeof_int_elem(void *ptr);
+
 int64_t minipack_unpack_int(void *ptr, size_t *sz);
 
 void minipack_pack_int(void *ptr, int64_t value, size_t *sz);
+
+int64_t minipack_fread_int(FILE *file, size_t *sz);
+
+int minipack_fwrite_int(FILE *file, int64_t value, size_t *sz);
 
 
 //======================================

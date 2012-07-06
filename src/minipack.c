@@ -655,6 +655,37 @@ size_t minipack_int_sizeof(int64_t value)
     return 0;
 }
 
+// Retrieves the size, in bytes, of how large the element at the given address
+// will be.
+//
+// ptr - A pointer where the element is.
+//
+// Returns the number of bytes needed for the element.
+size_t minipack_sizeof_int_elem(void *ptr)
+{
+    if(minipack_is_pos_fixnum(ptr)) {
+        return POS_FIXNUM_SIZE;
+    }
+    else if(minipack_is_neg_fixnum(ptr)) {
+        return NEG_FIXNUM_SIZE;
+    }
+    else if(minipack_is_int8(ptr)) {
+        return INT8_SIZE;
+    }
+    else if(minipack_is_int16(ptr)) {
+        return INT16_SIZE;
+    }
+    else if(minipack_is_int32(ptr)) {
+        return INT32_SIZE;
+    }
+    else if(minipack_is_int64(ptr)) {
+        return INT64_SIZE;
+    }
+    else {
+        return 0;
+    }
+}
+
 // Reads a signed integer from a given memory address.
 //
 // ptr - A pointer to where the signed int should be read from.
@@ -718,6 +749,65 @@ void minipack_pack_int(void *ptr, int64_t value, size_t *sz)
     else {
         *sz = 0;
     }
+}
+
+// Reads and unpacks a signed int from a file stream. If the element at the
+// current location is not a signed int then the sz is returned as 0.
+//
+// file - The file stream.
+// sz   - The number of bytes read from the stream.
+//
+// Returns the value read from the file stream.
+int64_t minipack_fread_int(FILE *file, size_t *sz)
+{
+    uint8_t data[BUFFER_SIZE];
+    
+    // If first byte cannot be read then exit.
+    if(fread(data, sizeof(uint8_t), 1, file) != 1) {
+        *sz = 0;
+        return 0;
+    }
+    fseek(file, -1, SEEK_CUR);
+
+    // Determine size of element based on type.
+    size_t elemsz = minipack_sizeof_int_elem(data);
+
+    // If element is not a int then exit.
+    if(elemsz == 0) {
+        *sz = 0;
+        return 0;
+    }
+
+    // If we can't read enough bytes then exit.
+    if(fread(data, elemsz, 1, file) != 1) {
+        *sz = 0;
+        return 0;
+    }
+    
+    // Parse and return value.
+    return minipack_unpack_int(data, sz);
+}
+
+// Packs and writes a signed int to a file stream.
+//
+// file - The file stream.
+// sz   - The number of bytes written to the stream.
+//
+// Returns 0 if successful, otherwise returns -1.
+int minipack_fwrite_int(FILE *file, int64_t value, size_t *sz)
+{
+    uint8_t data[BUFFER_SIZE];
+
+    // Pack the value.
+    minipack_pack_int(data, value, sz);
+    
+    // If the data cannot be written to file then return an error.
+    if(fwrite(data, *sz, 1, file) != 1) {
+        *sz = 0;
+        return -1;
+    }
+    
+    return 0;
 }
 
 

@@ -5,6 +5,40 @@
 
 //==============================================================================
 //
+// Helpers
+//
+//==============================================================================
+
+#define TMPFILE "tmp/uint"
+
+#define mu_assert_fread_int(FILENAME, VALUE, SZ) do {\
+    size_t sz; \
+    FILE *file = fopen(FILENAME, "r"); \
+    if(file == NULL) mu_fail("Cannot open file: %s", FILENAME); \
+    long pos = ftell(file); \
+    int64_t value = minipack_fread_int(file, &sz); \
+    mu_assert_with_msg(sz == SZ, "Unexpected size: %ld", sz); \
+    mu_assert_with_msg(value == VALUE, "Unexpected value: %lld", value); \
+    mu_assert_with_msg(pos+SZ == ftell(file), "Unexpected file position: %ld", ftell(file)); \
+    fclose(file); \
+} while(0)
+
+#define mu_assert_fwrite_int(FILENAME, VALUE, SZ, RC) do {\
+    size_t sz; \
+    FILE *file = fopen(TMPFILE, "w"); \
+    if(file == NULL) mu_fail("Cannot open temp file: %s", TMPFILE); \
+    long pos = ftell(file); \
+    int rc = minipack_fwrite_int(file, VALUE, &sz); \
+    mu_assert_with_msg(rc == RC, "Unexpected return value: %d", rc); \
+    mu_assert_with_msg(sz == SZ, "Unexpected size: %ld", sz); \
+    mu_assert_with_msg(pos+SZ == ftell(file), "Unexpected file position: %ld", ftell(file)); \
+    mu_assert_file(TMPFILE, FILENAME); \
+    fclose(file); \
+} while(0)
+
+
+//==============================================================================
+//
 // Test Cases
 //
 //==============================================================================
@@ -101,6 +135,65 @@ int test_pack_int() {
     minipack_pack_int(data, -9223372036854775807LL, &sz);
     mu_assert_mem(data, 9, "\xD3\x80\x00\x00\x00\x00\x00\x00\x01");
     mu_assert(sz == 9);
+
+    return 0;
+}
+
+int test_fread_int() {
+    // Fixnum
+    mu_assert_fread_int("tests/fixtures/fixnum/0", 0, 1);
+    mu_assert_fread_int("tests/fixtures/fixnum/127", 127, 1);
+    mu_assert_fread_int("tests/fixtures/fixnum/-1", -1, 1);
+    mu_assert_fread_int("tests/fixtures/fixnum/-32", -32, 1);
+
+    // 8-bit
+    mu_assert_fread_int("tests/fixtures/int/127", 127, 2);
+    mu_assert_fread_int("tests/fixtures/int/-128", -128, 2);
+
+    // 16-bit
+    mu_assert_fread_int("tests/fixtures/int/1000", 1000, 3);
+    mu_assert_fread_int("tests/fixtures/int/32767", 32767, 3);
+    mu_assert_fread_int("tests/fixtures/int/-32768", 32768, 3);
+
+    // 32-bit
+    mu_assert_fread_int("tests/fixtures/int/2147483647", 2147483647, 5);
+    mu_assert_fread_int("tests/fixtures/int/-2147483648", -2147483648, 5);
+
+    // 64-bit
+    mu_assert_fread_int("tests/fixtures/int/9223372036854775807", 9223372036854775807LL, 9);
+    mu_assert_fread_int("tests/fixtures/int/-9223372036854775807LL", -9223372036854775807LL, 9);
+
+    // ERR: Unsigned ints
+    mu_assert_fread_int("tests/fixtures/uint/128", 0, 0);
+    mu_assert_fread_int("tests/fixtures/uint/255", 0, 0);
+    mu_assert_fread_int("tests/fixtures/uint/256", 0, 0);
+
+    return 0;
+}
+
+int test_fwrite_int() {
+    // Fixnum
+    mu_assert_fwrite_int("tests/fixtures/fixnum/0", 0, 1, 0);
+    mu_assert_fwrite_int("tests/fixtures/fixnum/127", 127, 1, 0);
+    mu_assert_fwrite_int("tests/fixtures/fixnum/-1", -1, 1, 0);
+    mu_assert_fwrite_int("tests/fixtures/fixnum/-32", -32, 1, 0);
+
+    // 8-bit
+    mu_assert_fwrite_int("tests/fixtures/int/127", 127, 2, 0);
+    mu_assert_fwrite_int("tests/fixtures/int/-128", -128, 2, 0);
+
+    // 16-bit
+    mu_assert_fwrite_int("tests/fixtures/int/1000", 1000, 3, 0);
+    mu_assert_fwrite_int("tests/fixtures/int/32767", 32767, 3, 0);
+    mu_assert_fwrite_int("tests/fixtures/int/-32768", 32768, 3, 0);
+
+    // 32-bit
+    mu_assert_fwrite_int("tests/fixtures/int/2147483647", 2147483647, 5, 0);
+    mu_assert_fwrite_int("tests/fixtures/int/-2147483648", -2147483648, 5, 0);
+
+    // 64-bit
+    mu_assert_fwrite_int("tests/fixtures/int/9223372036854775807", 9223372036854775807LL, 9, 0);
+    mu_assert_fwrite_int("tests/fixtures/int/-9223372036854775807LL", -9223372036854775807LL, 9, 0);
 
     return 0;
 }
