@@ -623,7 +623,7 @@ void minipack_pack_uint64(void *ptr, uint64_t value, size_t *sz)
 // value - The value to calculate the size of.
 //
 // Returns the number of bytes needed for the element.
-size_t minipack_int_sizeof(int64_t value)
+size_t minipack_sizeof_int(int64_t value)
 {
     if(value >= POS_FIXNUM_MIN && value <= POS_FIXNUM_MAX) {
         return POS_FIXNUM_SIZE;

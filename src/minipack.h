@@ -112,7 +112,7 @@ void minipack_pack_uint64(void *ptr, uint64_t value, size_t *sz);
 // Signed Int
 //======================================
 
-size_t minipack_int_sizeof(int64_t value);
+size_t minipack_sizeof_int(int64_t value);
 
 size_t minipack_sizeof_int_elem(void *ptr);
 
