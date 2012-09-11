@@ -12,7 +12,7 @@
 
 #define TMPFILE "tmp/double"
 
-#define mu_assert_fread_double(FILENAME, VALUE, SZ) do {\
+#define mu_assert_fread_double(FILENAME, VALUE, SZ, POS) do {\
     size_t sz; \
     FILE *file = fopen(FILENAME, "r"); \
     if(file == NULL) mu_fail("Cannot open file: %s", FILENAME); \
@@ -20,7 +20,7 @@
     double value = minipack_fread_double(file, &sz); \
     mu_assert_with_msg(sz == SZ, "Unexpected size: %ld", sz); \
     mu_assert_with_msg(value == VALUE, "Unexpected value: %f", value); \
-    mu_assert_with_msg(pos+SZ == ftell(file), "Unexpected file position: %ld", ftell(file)); \
+    mu_assert_with_msg(pos+POS == ftell(file), "Unexpected file position: %ld", ftell(file)); \
     fclose(file); \
 } while(0)
 
@@ -96,10 +96,10 @@ int test_pack_double() {
 }
 
 int test_fread_double() {
-    mu_assert_fread_double("tests/fixtures/double/0", 0, 9);
-    mu_assert_fread_double("tests/fixtures/double/100", 100, 9);
-    mu_assert_fread_double("tests/fixtures/double/-100", -100, 9);
-    mu_assert_fread_double("tests/fixtures/fixnum/127", 0, 0);
+    mu_assert_fread_double("tests/fixtures/double/0", 0, 9, 9);
+    mu_assert_fread_double("tests/fixtures/double/100", 100, 9, 9);
+    mu_assert_fread_double("tests/fixtures/double/-100", -100, 9, 9);
+    mu_assert_fread_double("tests/fixtures/fixnum/127", 0, 0, 1);
     return 0;
 }
 

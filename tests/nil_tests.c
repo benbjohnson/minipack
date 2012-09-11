@@ -12,14 +12,14 @@
 
 #define TMPFILE "tmp/nil"
 
-#define mu_assert_fread_nil(FILENAME, SZ) do {\
+#define mu_assert_fread_nil(FILENAME, SZ, POS) do {\
     size_t sz; \
     FILE *file = fopen(FILENAME, "r"); \
     if(file == NULL) mu_fail("Cannot open file: %s", FILENAME); \
     long pos = ftell(file); \
     minipack_fread_nil(file, &sz); \
     mu_assert_with_msg(sz == SZ, "Unexpected size: %ld", sz); \
-    mu_assert_with_msg(pos+SZ == ftell(file), "Unexpected file position: %ld", ftell(file)); \
+    mu_assert_with_msg(pos+POS == ftell(file), "Unexpected file position: %ld", ftell(file)); \
     fclose(file); \
 } while(0)
 
@@ -74,8 +74,8 @@ int test_pack_nil() {
 }
 
 int test_fread_nil() {
-    mu_assert_fread_nil("tests/fixtures/nil/nil", 1);
-    mu_assert_fread_nil("tests/fixtures/fixnum/127", 0);
+    mu_assert_fread_nil("tests/fixtures/nil/nil", 1, 1);
+    mu_assert_fread_nil("tests/fixtures/fixnum/127", 0, 1);
     return 0;
 }
 

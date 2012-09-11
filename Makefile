@@ -75,4 +75,4 @@ tmp:
 clean:
 	rm -rf bin ${TEST_OBJECTS}
 	rm -rf tests/*.dSYM
-	rm -rf tmp
+	rm -rf tmp pkg

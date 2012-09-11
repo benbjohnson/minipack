@@ -12,7 +12,7 @@
 
 #define TMPFILE "tmp/float"
 
-#define mu_assert_fread_float(FILENAME, VALUE, SZ) do {\
+#define mu_assert_fread_float(FILENAME, VALUE, SZ, POS) do {\
     size_t sz; \
     FILE *file = fopen(FILENAME, "r"); \
     if(file == NULL) mu_fail("Cannot open file: %s", FILENAME); \
@@ -20,7 +20,7 @@
     float value = minipack_fread_float(file, &sz); \
     mu_assert_with_msg(sz == SZ, "Unexpected size: %ld", sz); \
     mu_assert_with_msg(value == VALUE, "Unexpected value: %f", value); \
-    mu_assert_with_msg(pos+SZ == ftell(file), "Unexpected file position: %ld", ftell(file)); \
+    mu_assert_with_msg(pos+POS == ftell(file), "Unexpected file position: %ld", ftell(file)); \
     fclose(file); \
 } while(0)
 
@@ -97,10 +97,10 @@ int test_pack_float() {
 }
 
 int test_fread_float() {
-    mu_assert_fread_float("tests/fixtures/float/0", 0, 5);
-    mu_assert_fread_float("tests/fixtures/float/100", 100, 5);
-    mu_assert_fread_float("tests/fixtures/float/-100", -100, 5);
-    mu_assert_fread_float("tests/fixtures/fixnum/127", 0, 0);
+    mu_assert_fread_float("tests/fixtures/float/0", 0, 5, 5);
+    mu_assert_fread_float("tests/fixtures/float/100", 100, 5, 5);
+    mu_assert_fread_float("tests/fixtures/float/-100", -100, 5, 5);
+    mu_assert_fread_float("tests/fixtures/fixnum/127", 0, 0, 1);
     return 0;
 }
 

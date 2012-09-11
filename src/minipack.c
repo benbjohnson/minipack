@@ -408,7 +408,6 @@ void minipack_pack_uint(void *ptr, uint64_t value, size_t *sz)
 // Returns the value read from the file stream.
 uint64_t minipack_fread_uint(FILE *file, size_t *sz)
 {
-    long pos = ftell(file);
     uint8_t data[BUFFER_SIZE];
     
     // If first byte cannot be read then exit.
@@ -416,14 +415,13 @@ uint64_t minipack_fread_uint(FILE *file, size_t *sz)
         *sz = 0;
         return 0;
     }
-    fseek(file, pos, SEEK_SET);
+    ungetc(data[0], file);
 
     // Determine size of element based on type.
     size_t elemsz = minipack_sizeof_uint_elem(data);
 
     // If element is not a uint or we can't read enough bytes then exit.
     if(elemsz == 0 || fread(data, elemsz, 1, file) != 1) {
-        fseek(file, pos, SEEK_SET);
         *sz = 0;
         return 0;
     }
@@ -754,7 +752,6 @@ void minipack_pack_int(void *ptr, int64_t value, size_t *sz)
 // Returns the value read from the file stream.
 int64_t minipack_fread_int(FILE *file, size_t *sz)
 {
-    long pos = ftell(file);
     uint8_t data[BUFFER_SIZE];
     
     // If first byte cannot be read then exit.
@@ -762,14 +759,13 @@ int64_t minipack_fread_int(FILE *file, size_t *sz)
         *sz = 0;
         return 0;
     }
-    fseek(file, pos, SEEK_SET);
+    ungetc(data[0], file);
 
     // Determine size of element based on type.
     size_t elemsz = minipack_sizeof_int_elem(data);
 
     // If element is not a int or we can't read enough bytes then exit.
     if(elemsz == 0 || fread(data, elemsz, 1, file) != 1) {
-        fseek(file, pos, SEEK_SET);
         *sz = 0;
         return 0;
     }
@@ -1002,12 +998,10 @@ void minipack_pack_nil(void *ptr, size_t *sz)
 // sz   - The number of bytes read from the stream.
 void minipack_fread_nil(FILE *file, size_t *sz)
 {
-    long pos = ftell(file);
     uint8_t data[NIL_SIZE];
     
     // If element cannot be read then exit.
     if(fread(data, NIL_SIZE, 1, file) != 1 || !minipack_is_nil(data)) {
-        fseek(file, pos, SEEK_SET);
         *sz = 0;
         return;
     }
@@ -1123,12 +1117,10 @@ void minipack_pack_bool(void *ptr, bool value, size_t *sz)
 // Returns the value read from the stream.
 bool minipack_fread_bool(FILE *file, size_t *sz)
 {
-    long pos = ftell(file);
     uint8_t data[BOOL_SIZE];
     
     // If element cannot be read then exit.
     if(fread(data, BOOL_SIZE, 1, file) != 1 || !minipack_is_bool(data)) {
-        fseek(file, pos, SEEK_SET);
         *sz = 0;
         return false;
     }
@@ -1216,12 +1208,10 @@ void minipack_pack_float(void *ptr, float value, size_t *sz)
 // Returns the value read from the stream.
 float minipack_fread_float(FILE *file, size_t *sz)
 {
-    long pos = ftell(file);
     uint8_t data[FLOAT_SIZE];
     
     // If element cannot be read or element is not a float then exit.
     if(fread(data, FLOAT_SIZE, 1, file) != 1 || !minipack_is_float(data)) {
-        fseek(file, pos, SEEK_SET);
         *sz = 0;
         return false;
     }
@@ -1303,12 +1293,10 @@ void minipack_pack_double(void *ptr, double value, size_t *sz)
 // Returns the value read from the stream.
 double minipack_fread_double(FILE *file, size_t *sz)
 {
-    long pos = ftell(file);
     uint8_t data[DOUBLE_SIZE];
     
     // If element cannot be read or element is not a double then exit.
     if(fread(data, DOUBLE_SIZE, 1, file) != 1 || !minipack_is_double(data)) {
-        fseek(file, pos, SEEK_SET);
         *sz = 0;
         return false;
     }
@@ -1456,7 +1444,6 @@ void minipack_pack_raw(void *ptr, uint32_t length, size_t *sz)
 // Returns the length of the raw bytes from the file stream.
 uint32_t minipack_fread_raw(FILE *file, size_t *sz)
 {
-    long pos = ftell(file);
     uint8_t data[RAW32_SIZE];
     
     // If first byte cannot be read then exit.
@@ -1464,14 +1451,13 @@ uint32_t minipack_fread_raw(FILE *file, size_t *sz)
         *sz = 0;
         return 0;
     }
-    fseek(file, pos, SEEK_SET);
+    ungetc(data[0], file);
 
     // Determine size of element based on type.
     size_t elemsz = minipack_sizeof_raw_elem(data);
 
     // If element is not a raw or we can't read enough bytes then exit.
     if(elemsz == 0 || fread(data, elemsz, 1, file) != 1) {
-        fseek(file, pos, SEEK_SET);
         *sz = 0;
         return 0;
     }
@@ -1726,7 +1712,6 @@ void minipack_pack_array(void *ptr, uint32_t count, size_t *sz)
 // Returns the item count of the array from the file stream.
 uint32_t minipack_fread_array(FILE *file, size_t *sz)
 {
-    long pos = ftell(file);
     uint8_t data[ARRAY32_SIZE];
     
     // If first byte cannot be read then exit.
@@ -1734,14 +1719,13 @@ uint32_t minipack_fread_array(FILE *file, size_t *sz)
         *sz = 0;
         return 0;
     }
-    fseek(file, pos, SEEK_SET);
+    ungetc(data[0], file);
 
     // Determine size of element based on type.
     size_t elemsz = minipack_sizeof_array_elem(data);
 
     // If element is not a array or we can't read enough bytes then exit.
     if(elemsz == 0 || fread(data, elemsz, 1, file) != 1) {
-        fseek(file, pos, SEEK_SET);
         *sz = 0;
         return 0;
     }
@@ -2000,7 +1984,6 @@ void minipack_pack_map(void *ptr, uint32_t count, size_t *sz)
 // Returns the item count of the map from the file stream.
 uint32_t minipack_fread_map(FILE *file, size_t *sz)
 {
-    long pos = ftell(file);
     uint8_t data[MAP32_SIZE];
     
     // If first byte cannot be read then exit.
@@ -2008,14 +1991,13 @@ uint32_t minipack_fread_map(FILE *file, size_t *sz)
         *sz = 0;
         return 0;
     }
-    fseek(file, pos, SEEK_SET);
+    ungetc(data[0], file);
 
     // Determine size of element based on type.
     size_t elemsz = minipack_sizeof_map_elem(data);
 
     // If element is not a map or we can't read enough bytes then exit.
     if(elemsz == 0 || fread(data, elemsz, 1, file) != 1) {
-        fseek(file, pos, SEEK_SET);
         *sz = 0;
         return 0;
     }
