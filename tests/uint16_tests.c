@@ -10,6 +10,11 @@
 //
 //==============================================================================
 
+int test_sizeof_uint16() {
+    mu_assert(minipack_sizeof_elem_and_data("\xCD\x00\x02") == 3);
+    return 0;
+}
+
 int test_unpack_uint16() {
     size_t sz;
     mu_assert(minipack_unpack_uint16("\xCD\x00\x00", &sz) == 0);
@@ -63,6 +68,7 @@ int test_pack_uint16() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_sizeof_uint16);
     mu_run_test(test_unpack_uint16);
     mu_run_test(test_pack_uint16);
     return 0;

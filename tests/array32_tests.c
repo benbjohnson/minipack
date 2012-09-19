@@ -10,6 +10,11 @@
 //
 //==============================================================================
 
+int test_sizeof_array32() {
+    mu_assert(minipack_sizeof_elem_and_data("\xDD\x00\x00\x00\x00") == 0);
+    return 0;
+}
+
 int test_unpack_array32() {
     size_t sz;
     
@@ -49,6 +54,7 @@ int test_pack_array32() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_sizeof_array32);
     mu_run_test(test_unpack_array32);
     mu_run_test(test_pack_array32);
     return 0;

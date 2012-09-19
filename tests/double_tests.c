@@ -50,6 +50,11 @@ int test_is_double() {
     return 0;
 }
 
+int test_sizeof_double() {
+    mu_assert(minipack_sizeof_elem_and_data("\xCB\x00\x00\x00\x00\x00\x00\x00\x00") == 9);
+    return 0;
+}
+
 int test_unpack_double() {
     size_t sz;
     mu_assert(minipack_unpack_double("\xCB\x00\x00\x00\x00\x00\x00\x00\x00", &sz) == 0);
@@ -119,6 +124,7 @@ int test_fwrite_double() {
 
 int all_tests() {
     mu_run_test(test_is_double);
+    mu_run_test(test_sizeof_double);
     mu_run_test(test_unpack_double);
     mu_run_test(test_pack_double);
     mu_run_test(test_fread_double);

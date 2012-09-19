@@ -10,6 +10,11 @@
 //
 //==============================================================================
 
+int test_sizeof_raw32() {
+    mu_assert(minipack_sizeof_elem_and_data("\xDB\x00\x00\x00\x05") == 10);
+    return 0;
+}
+
 int test_unpack_raw32() {
     size_t sz;
     
@@ -47,6 +52,7 @@ int test_pack_raw32() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_sizeof_raw32);
     mu_run_test(test_unpack_raw32);
     mu_run_test(test_pack_raw32);
     return 0;

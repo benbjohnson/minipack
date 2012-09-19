@@ -10,6 +10,11 @@
 //
 //==============================================================================
 
+int test_sizeof_uint64() {
+    mu_assert(minipack_sizeof_elem_and_data("\xCF\x00\x00\x00\x00\x00\x00\x00\x02") == 9);
+    return 0;
+}
+
 int test_unpack_uint64() {
     size_t sz;
     mu_assert(minipack_unpack_uint64("\xCF\x00\x00\x00\x00\x00\x00\x00\x00", &sz) == 0);
@@ -56,6 +61,7 @@ int test_pack_uint64() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_sizeof_uint64);
     mu_run_test(test_unpack_uint64);
     mu_run_test(test_pack_uint64);
     return 0;

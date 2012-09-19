@@ -10,6 +10,11 @@
 //
 //==============================================================================
 
+int test_sizeof_fixarray() {
+    mu_assert(minipack_sizeof_elem_and_data("\x90") == 0);
+    return 0;
+}
+
 int test_unpack_fixarray() {
     size_t sz;
 
@@ -55,6 +60,7 @@ int test_pack_fixarray() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_sizeof_fixarray);
     mu_run_test(test_unpack_fixarray);
     mu_run_test(test_pack_fixarray);
     return 0;

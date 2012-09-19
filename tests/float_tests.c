@@ -50,6 +50,11 @@ int test_is_float() {
     return 0;
 }
 
+int test_sizeof_float() {
+    mu_assert(minipack_sizeof_elem_and_data("\xCA\x00\x00\x00\x00") == 5);
+    return 0;
+}
+
 int test_unpack_float() {
     size_t sz;
 
@@ -120,6 +125,7 @@ int test_fwrite_float() {
 
 int all_tests() {
     mu_run_test(test_is_float);
+    mu_run_test(test_sizeof_float);
     mu_run_test(test_unpack_float);
     mu_run_test(test_pack_float);
     mu_run_test(test_fread_float);

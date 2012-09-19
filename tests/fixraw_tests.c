@@ -10,6 +10,11 @@
 //
 //==============================================================================
 
+int test_sizeof_fixraw() {
+    mu_assert(minipack_sizeof_elem_and_data("\xA5" "abcde") == 6);
+    return 0;
+}
+
 int test_unpack_fixraw() {
     size_t sz;
     
@@ -51,6 +56,7 @@ int test_pack_fixraw() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_sizeof_fixraw);
     mu_run_test(test_unpack_fixraw);
     mu_run_test(test_pack_fixraw);
     return 0;

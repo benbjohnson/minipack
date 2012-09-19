@@ -10,6 +10,11 @@
 //
 //==============================================================================
 
+int test_sizeof_map16() {
+    mu_assert(minipack_sizeof_elem_and_data("\xDE\x00\x00") == 0);
+    return 0;
+}
+
 int test_unpack_map16() {
     size_t sz;
     
@@ -49,6 +54,7 @@ int test_pack_map16() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_sizeof_map16);
     mu_run_test(test_unpack_map16);
     mu_run_test(test_pack_map16);
     return 0;

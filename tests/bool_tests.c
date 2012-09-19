@@ -62,6 +62,12 @@ int test_is_bool() {
     return 0;
 }
 
+int test_sizeof_bool() {
+    mu_assert(minipack_sizeof_elem_and_data("\xC3") == 1);
+    mu_assert(minipack_sizeof_elem_and_data("\xC2") == 1);
+    return 0;
+}
+
 int test_unpack_bool() {
     size_t sz;
     
@@ -116,6 +122,7 @@ int test_fwrite_bool() {
 
 int all_tests() {
     mu_run_test(test_is_bool);
+    mu_run_test(test_sizeof_bool);
     mu_run_test(test_unpack_bool);
     mu_run_test(test_pack_bool);
     mu_run_test(test_fread_bool);

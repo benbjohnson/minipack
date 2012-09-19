@@ -10,6 +10,11 @@
 //
 //==============================================================================
 
+int test_sizeof_int32() {
+    mu_assert(minipack_sizeof_elem_and_data("\xD2\x00\x00\x00\x00") == 5);
+    return 0;
+}
+
 int test_unpack_int32() {
     size_t sz;
     mu_assert(minipack_unpack_int32("\xD2\x00\x00\x00\x00", &sz) == 0);
@@ -61,6 +66,7 @@ int test_pack_int32() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_sizeof_int32);
     mu_run_test(test_unpack_int32);
     mu_run_test(test_pack_int32);
     return 0;

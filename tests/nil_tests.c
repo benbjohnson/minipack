@@ -50,6 +50,11 @@ int test_is_nil() {
     return 0;
 }
 
+int test_sizeof_nil() {
+    mu_assert(minipack_sizeof_elem_and_data("\xC0") == 1);
+    return 0;
+}
+
 int test_unpack_nil() {
     size_t sz;
     uint8_t data[] = {0xC0, 0x00};
@@ -93,6 +98,7 @@ int test_fwrite_nil() {
 
 int all_tests() {
     mu_run_test(test_is_nil);
+    mu_run_test(test_sizeof_nil);
     mu_run_test(test_unpack_nil);
     mu_run_test(test_pack_nil);
     mu_run_test(test_fread_nil);

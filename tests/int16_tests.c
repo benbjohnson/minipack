@@ -10,6 +10,11 @@
 //
 //==============================================================================
 
+int test_sizeof_int16() {
+    mu_assert(minipack_sizeof_elem_and_data("\xD1\x7F\xFF") == 3);
+    return 0;
+}
+
 int test_unpack_int16() {
     size_t sz;
     mu_assert(minipack_unpack_int16("\xD1\x00\x00", &sz) == 0);
@@ -61,6 +66,7 @@ int test_pack_int16() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_sizeof_int16);
     mu_run_test(test_unpack_int16);
     mu_run_test(test_pack_int16);
     return 0;

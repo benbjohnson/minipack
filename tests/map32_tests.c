@@ -10,6 +10,11 @@
 //
 //==============================================================================
 
+int test_sizeof_map32() {
+    mu_assert(minipack_sizeof_elem_and_data("\xDF\x00\x00\x00\x05") == 0);
+    return 0;
+}
+
 int test_unpack_map32() {
     size_t sz;
     mu_assert(minipack_unpack_map32("\xDF\x00\x00\x00\x00", &sz) == 0);
@@ -48,6 +53,7 @@ int test_pack_map32() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_sizeof_map32);
     mu_run_test(test_unpack_map32);
     mu_run_test(test_pack_map32);
     return 0;

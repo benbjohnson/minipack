@@ -10,6 +10,11 @@
 //
 //==============================================================================
 
+int test_sizeof_raw16() {
+    mu_assert(minipack_sizeof_elem_and_data("\xDA\x00\x05") == 8);
+    return 0;
+}
+
 int test_unpack_raw16() {
     size_t sz;
 
@@ -49,6 +54,7 @@ int test_pack_raw16() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_sizeof_raw16);
     mu_run_test(test_unpack_raw16);
     mu_run_test(test_pack_raw16);
     return 0;

@@ -14,6 +14,11 @@
 // Positive Fixnum
 //--------------------------------------
 
+int test_sizeof_pos_fixnum() {
+    mu_assert(minipack_sizeof_elem_and_data("\x02") == 1);
+    return 0;
+}
+
 int test_pos_fixnum_read() {
     size_t sz;
     uint8_t data[] = {0x00, 0x02, 0x14, 0x7F, 0x80};
@@ -59,6 +64,11 @@ int test_pos_fixnum_write() {
 // Negative Fixnum
 //--------------------------------------
 
+int test_sizeof_neg_fixnum() {
+    mu_assert(minipack_sizeof_elem_and_data("\xFD") == 1);
+    return 0;
+}
+
 int test_neg_fixnum_read() {
     size_t sz;
     uint8_t data[] = {0xFF, 0xFD, 0xEC, 0xE0};
@@ -94,9 +104,11 @@ int test_neg_fixnum_write() {
 //==============================================================================
 
 int all_tests() {
+    mu_run_test(test_sizeof_pos_fixnum);
     mu_run_test(test_pos_fixnum_read);
     mu_run_test(test_pos_fixnum_write);
 
+    mu_run_test(test_sizeof_neg_fixnum);
     mu_run_test(test_neg_fixnum_read);
     mu_run_test(test_neg_fixnum_write);
 
