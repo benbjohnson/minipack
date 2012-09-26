@@ -764,7 +764,7 @@ void minipack_pack_int(void *ptr, int64_t value, size_t *sz)
         minipack_pack_pos_fixnum(ptr, (int8_t)value, sz);
     }
     else if(value >= NEG_FIXNUM_MIN && value <= NEG_FIXNUM_MAX) {
-        minipack_pack_pos_fixnum(ptr, (int8_t)value, sz);
+        minipack_pack_neg_fixnum(ptr, (int8_t)value, sz);
     }
     else if(value >= INT8_MIN && value <= INT8_MAX) {
         minipack_pack_int8(ptr, (int8_t)value, sz);
