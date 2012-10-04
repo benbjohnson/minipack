@@ -84,6 +84,28 @@ int test_unpack_int() {
     mu_assert(minipack_unpack_int("\xD3\x80\x00\x00\x00\x00\x00\x00\x01", &sz) == -9223372036854775807LL);
     mu_assert(sz == 9);
 
+    // 8-bit (Unsigned)
+    mu_assert(minipack_unpack_int("\xCC\x80", &sz) == 128);
+    mu_assert(sz == 2);
+    mu_assert(minipack_unpack_int("\xCC\xFF", &sz) == 255);
+    mu_assert(sz == 2);
+
+    // 16-bit (Unsigned)
+    mu_assert(minipack_unpack_int("\xCD\x01\x00", &sz) == 256);
+    mu_assert(sz == 3);
+    mu_assert(minipack_unpack_int("\xCD\xFF\xFF", &sz) == 65535);
+    mu_assert(sz == 3);
+
+    // 32-bit (Unsigned)
+    mu_assert(minipack_unpack_int("\xCE\x00\x01\x00\x00", &sz) == 65536);
+    mu_assert(sz == 5);
+    mu_assert(minipack_unpack_int("\xCE\xFF\xFF\xFF\xFF", &sz) == 4294967295);
+    mu_assert(sz == 5);
+
+    // 64-bit (Unsigned)
+    mu_assert(minipack_unpack_int("\xCF\x00\x00\x00\x01\x00\x00\x00\x00", &sz) == 4294967296);
+    mu_assert(sz == 9);
+
     return 0;
 }
 
@@ -162,6 +184,18 @@ int test_fread_int() {
     // 64-bit
     mu_assert_fread_int("tests/fixtures/int/9223372036854775807", 9223372036854775807LL, 9);
     mu_assert_fread_int("tests/fixtures/int/-9223372036854775807LL", -9223372036854775807LL, 9);
+
+    // 8-bit (Unsigned)
+    mu_assert_fread_int("tests/fixtures/uint/128", 128, 2);
+    mu_assert_fread_int("tests/fixtures/uint/255", 255, 2);
+
+    // 16-bit (Unsigned)
+    mu_assert_fread_int("tests/fixtures/uint/256", 256, 3);
+    mu_assert_fread_int("tests/fixtures/uint/65535", 65535, 3);
+
+    // 32-bit (Unsigned)
+    mu_assert_fread_int("tests/fixtures/uint/65536", 65536, 5);
+    mu_assert_fread_int("tests/fixtures/uint/4294967295", 4294967295, 5);
 
     // ERR: Unsigned ints
     mu_assert_fread_int("tests/fixtures/uint/128", 0, 0);

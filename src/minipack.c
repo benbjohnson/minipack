@@ -713,6 +713,19 @@ size_t minipack_sizeof_int_elem(void *ptr)
     else if(minipack_is_int64(ptr)) {
         return INT64_SIZE;
     }
+    // Fallback to unsigned ints.
+    else if(minipack_is_uint8(ptr)) {
+        return UINT8_SIZE;
+    }
+    else if(minipack_is_uint16(ptr)) {
+        return UINT16_SIZE;
+    }
+    else if(minipack_is_uint32(ptr)) {
+        return UINT32_SIZE;
+    }
+    else if(minipack_is_uint64(ptr)) {
+        return UINT64_SIZE;
+    }
     else {
         return 0;
     }
@@ -736,16 +749,26 @@ int64_t minipack_unpack_int(void *ptr, size_t *sz)
         return (int64_t)minipack_unpack_int8(ptr, sz);
     }
     else if(minipack_is_int16(ptr)) {
-        *sz = INT16_SIZE;
         return (int64_t)minipack_unpack_int16(ptr, sz);
     }
     else if(minipack_is_int32(ptr)) {
-        *sz = INT32_SIZE;
         return (int64_t)minipack_unpack_int32(ptr, sz);
     }
     else if(minipack_is_int64(ptr)) {
-        *sz = INT64_SIZE;
         return minipack_unpack_int64(ptr, sz);
+    }
+    // Fallback to unsigned ints.
+    else if(minipack_is_uint8(ptr)) {
+        return (int64_t)minipack_unpack_uint8(ptr, sz);
+    }
+    else if(minipack_is_uint16(ptr)) {
+        return (int64_t)minipack_unpack_uint16(ptr, sz);
+    }
+    else if(minipack_is_uint32(ptr)) {
+        return (int64_t)minipack_unpack_uint32(ptr, sz);
+    }
+    else if(minipack_is_uint64(ptr)) {
+        return minipack_unpack_uint64(ptr, sz);
     }
     else {
         *sz = 0;
