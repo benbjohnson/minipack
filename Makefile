@@ -4,7 +4,7 @@
 
 VERSION=0.5.1
 
-CFLAGS=-g -Wall -Wextra -std=c99 -D_FILE_OFFSET_BITS=64 -lmsgpack
+CFLAGS=-g -O4 -Wall -Wextra -std=c99 -D_FILE_OFFSET_BITS=64 -lmsgpack
 
 SOURCES=src/minipack.c
 OBJECTS=bin/minipack.o
@@ -44,7 +44,7 @@ build/tests:
 	mkdir -p build/tests/eql
 
 $(TEST_OBJECTS): %: %.c ${OBJECTS}
-	$(CC) $(CFLAGS) -Isrc -o $@ $< ${OBJECTS}
+	$(CC) $(CFLAGS) -Wno-unused-result -Isrc -o $@ $< ${OBJECTS}
 
 
 ################################################################################
