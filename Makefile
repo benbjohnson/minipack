@@ -2,7 +2,7 @@
 # Variables
 ################################################################################
 
-VERSION=0.5.0
+VERSION=0.5.1
 
 CFLAGS=-g -Wall -Wextra -std=c99 -D_FILE_OFFSET_BITS=64 -lmsgpack
 
