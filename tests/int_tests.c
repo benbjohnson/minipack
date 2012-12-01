@@ -18,7 +18,7 @@
     long pos = ftell(file); \
     int64_t value = minipack_fread_int(file, &sz); \
     mu_assert_with_msg(sz == SZ, "Unexpected size: %ld", sz); \
-    mu_assert_with_msg(value == VALUE, "Unexpected value: %lld", value); \
+    mu_assert_with_msg(value == VALUE, "Unexpected value: %" PRId64, value); \
     mu_assert_with_msg(pos+SZ == ftell(file), "Unexpected file position: %ld", ftell(file)); \
     fclose(file); \
 } while(0)

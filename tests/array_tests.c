@@ -85,6 +85,7 @@ int test_pack_array() {
 
     // Fixarray
     minipack_pack_array(data, 0, &sz);
+    printf("sz %ld\n", sz);
     mu_assert(sz == 1);
     mu_assert_mem(data, 1, "\x90");
     minipack_pack_array(data, 15, &sz);
