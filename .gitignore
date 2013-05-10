@@ -3,3 +3,7 @@ pkg/
 tests/*_tests
 tests/*.dSYM
 tmp/
+msgpack-c/
+.prepared-*
+.cproject
+.project
